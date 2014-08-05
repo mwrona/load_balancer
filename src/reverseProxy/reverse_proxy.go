@@ -143,7 +143,7 @@ func main() {
 
 	utils.Log("Reverse Proxy", "Start")
 
-	server := &http.Server{Addr: env.Protocol + proxyAddress + ":" + proxyPort, TLSConfig: env.TLSClientConfigCert}
+	server := &http.Server{Addr: proxyAddress + ":" + proxyPort, TLSConfig: env.TLSClientConfigCert}
 
 	//err := server.ListenAndServe()
 	//err := server.ListenAndServeTLS("cert.pem", "key.pem")
