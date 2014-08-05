@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"load_balancer/reverseProxy/utils"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
-	"reverseProxy/utils"
 	"strings"
 )
 
