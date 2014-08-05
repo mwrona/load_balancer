@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"load_balancer/reverseProxy/env"
+	"load_balancer/reverseProxy/utils"
 	"net"
 	"net/http"
 	"net/http/httputil"
-	"reverseProxy/env"
-	"reverseProxy/utils"
 	"time"
 
 	"code.google.com/p/go.net/ipv4"
