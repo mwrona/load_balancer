@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"load_balancer/reverseProxy/model"
 	"load_balancer/reverseProxy/utils"
 	"log"
 	"net"
@@ -46,7 +47,7 @@ func unregisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func waitForProxyAddress() {
-	config, err := utils.LoadConfig()
+	config, err := model.LoadConfig()
 	utils.Check(err)
 
 	mcaddr, err := net.ResolveUDPAddr("udp", config.Address)
@@ -94,7 +95,7 @@ func main() {
 
 	resp.Body.Close()
 
-	http.HandleFunc("/get/", getHandler)
+	http.HandleFunc("/", getHandler)
 	http.HandleFunc("/status/", getHandler)
 	http.HandleFunc("/unregister", unregisterHandler)
 	log.Printf("Server : start")

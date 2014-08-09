@@ -19,11 +19,10 @@ func main() {
 	context := &model.Context{
 		ServersList:  model.CreateServersList(),
 		ProxyPort:    "8080",
-		ProxyAddress: "localhost"
-	}
+		ProxyAddress: "localhost"}
 
 	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: env.TransportCert}
-	http.Handle("/query/", reverseProxy)
+	http.Handle("/", reverseProxy)
 
 	http.Handle("/register", model.ContextHandler(context, handlers.RegisterHandler))
 	http.Handle("/unregister", model.ContextHandler(context, handlers.UnregisterHandler))
