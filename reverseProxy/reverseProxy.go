@@ -34,7 +34,10 @@ func main() {
 
 	log.Printf("Reverse Proxy : Start")
 
-	server := &http.Server{Addr: context.ProxyAddress + ":" + context.ProxyPort, TLSConfig: env.TLSClientConfigCert}
+	server := &http.Server{
+		Addr:      context.ProxyAddress + ":" + context.ProxyPort,
+		TLSConfig: env.TLSClientConfigCert,
+	}
 
 	//err := server.ListenAndServe()
 	//err := server.ListenAndServeTLS("cert.pem", "key.pem")
