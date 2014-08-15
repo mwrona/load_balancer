@@ -6,7 +6,7 @@ import (
 )
 
 func ServersStatusChecker(serversList *model.ServersList) {
-	ticker := time.NewTicker(60 * time.Second)
+	ticker := time.NewTicker(10 * time.Second)
 	for {
 		select {
 		case <-ticker.C:

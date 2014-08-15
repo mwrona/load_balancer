@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"load_balancer/reverseProxy/env"
 	"load_balancer/reverseProxy/model"
 	"log"
@@ -9,15 +10,17 @@ import (
 
 func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 	return func(req *http.Request) {
-		if context.ServersList.IsEmpty() {
+		fmt.Println()
+		log.Printf("Reverse Proxy : query: %v", req.URL)
+		if host, err := context.ServersList.GetNext(); err != nil {
 			req.URL.Scheme = env.Protocol
 			req.URL.Path = "/error/"
 			req.URL.Host = context.ProxyAddress + ":" + context.ProxyPort
-			log.Printf("Reverse Proxy : error, empty server list, redirect to %v", req.URL)
+			log.Printf("Reverse Proxy : error, redirect to %v\n\n", req.URL)
 		} else {
 			req.URL.Scheme = "http"
-			req.URL.Host = context.ServersList.GetNext()
-			log.Printf("Reverse Proxy : redirect to %v", req.URL)
+			req.URL.Host = host
+			log.Printf("Reverse Proxy : redirect to %v\n\n", req.URL)
 		}
 	}
 }
