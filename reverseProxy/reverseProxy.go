@@ -21,6 +21,8 @@ func main() {
 		ProxyPort:    "8080",
 		ProxyAddress: "localhost"}
 
+	utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
+
 	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: env.TransportCert}
 	http.Handle("/", reverseProxy)
 
