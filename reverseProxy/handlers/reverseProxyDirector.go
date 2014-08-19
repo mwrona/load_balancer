@@ -11,7 +11,7 @@ import (
 func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 	return func(req *http.Request) {
 		fmt.Println()
-		log.Printf("Reverse Proxy : query: %v", req.URL)
+		log.Printf("Reverse Proxy : query: %v, from: %v, protocol: %v", req.URL, req.Host, req.Proto)
 		if host, err := context.ServersList.GetNext(); err != nil {
 			req.URL.Scheme = env.Protocol
 			req.URL.Path = "/error/"

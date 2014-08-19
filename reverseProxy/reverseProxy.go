@@ -18,7 +18,7 @@ func main() {
 
 	context := &model.Context{
 		ServersList:  model.CreateServersList(),
-		ProxyPort:    "8080",
+		ProxyPort:    "9000",
 		ProxyAddress: "localhost"}
 
 	utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
@@ -37,7 +37,7 @@ func main() {
 	log.Printf("Reverse Proxy : Start")
 
 	server := &http.Server{
-		Addr:      context.ProxyAddress + ":" + context.ProxyPort,
+		Addr:      ":" + context.ProxyPort,
 		TLSConfig: env.TLSClientConfigCert,
 	}
 
