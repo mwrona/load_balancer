@@ -1,7 +1,7 @@
 package model
 
 type Context struct {
-	ServersList  *ServersList
-	ProxyAddress string
-	ProxyPort    string
+	ExperimentManagersList *ExperimentManagersList
+	ProxyAddress           string
+	ProxyPort              string
 }
