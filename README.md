@@ -6,24 +6,26 @@ Contents
 * server - experiment manager mock 
 * client - client mock,  
 * config - configuraton for load balancer 
+
 Note: server and client may not work with current version of load balancer. They may require some adjustments. 
+
 Installation guide: 
 ---------------------- 
 Go 
 -- 
 To build and install load balancer you need to install go programming language. 
 You can install it from official binary distribution: 
-``` 
-https://golang.org/doc/install 
-``` 
+
+https://golang.org/doc/install
+
 or from source: 
-``` 
+
 https://golang.org/doc/install/source 
-``` 
+
 After that you have to specify your $GOPATH. Read more about it here: 
-``` 
+
 https://golang.org/doc/code.html#GOPATH 
-``` 
+
 Installation 
 -------------- 
 You can download it directly from GitHub. You have to downlaod it into your $GOPATH/src folder 
