@@ -12,7 +12,7 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 	return func(req *http.Request) {
 		fmt.Println()
 		log.Printf("Reverse Proxy : query: %v", req.URL)
-		if host, err := context.ServersList.GetNext(); err != nil {
+		if host, err := context.ExperimentManagersList.GetNext(); err != nil {
 			req.URL.Scheme = env.Protocol
 			req.URL.Path = "/error/"
 			req.URL.Host = context.ProxyAddress + ":" + context.ProxyPort

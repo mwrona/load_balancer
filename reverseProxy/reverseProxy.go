@@ -17,9 +17,9 @@ func main() {
 	}
 
 	context := &model.Context{
-		ServersList:  model.CreateServersList(),
-		ProxyPort:    "9000",
-		ProxyAddress: "localhost"}
+		ExperimentManagersList: model.NewExperimentManagersList(),
+		ProxyPort:              "9000",
+		ProxyAddress:           "localhost"}
 
 	utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
 
@@ -32,7 +32,7 @@ func main() {
 	http.HandleFunc("/error/", handlers.ErrorHandler)
 
 	go services.MulticastAddressSender(context.ProxyAddress, context.ProxyPort)
-	go services.ServersStatusChecker(context.ServersList)
+	go services.ExperimentManagersStatusChecker(context.ExperimentManagersList)
 
 	log.Printf("Reverse Proxy : Start")
 
