@@ -28,7 +28,7 @@ https://golang.org/doc/code.html#GOPATH
 
 Installation 
 -------------- 
-You can download it directly from GitHub. You have to downlaod it into your $GOPATH/src folder 
+You can download it directly from GitHub. You have to download it into your $GOPATH/src folder 
 ``` 
 git clone https://github.com/mwrona/load_balancer.git 
 ``` 
