@@ -19,6 +19,7 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 			log.Printf("Reverse Proxy : error, redirect to %v\n\n", req.URL)
 		} else {
 			req.URL.Scheme = "http"
+			req.Header.Add("X-Forwarded-Proto", env.Protocol)
 			req.URL.Host = host
 			log.Printf("Reverse Proxy : redirect to %v\n\n", req.URL)
 		}
