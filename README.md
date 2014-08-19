@@ -2,10 +2,10 @@ Load Balancer
 ============ 
 Contents 
 ---------- 
-reverseProxy - main load balancer program 
-server - experiment manager mock 
-client - client mock,  
-config - configuraton for load balancer 
+* reverseProxy - main load balancer program 
+* server - experiment manager mock 
+* client - client mock,  
+* config - configuraton for load balancer 
 Note: server and client may not work with current version of load balancer. They may require some adjustments. 
 Installation guide: 
 ---------------------- 
@@ -42,9 +42,9 @@ This command will install load balancer in $GOPATH/bin. It's name will be revers
 Build Options 
 ---------------- 
 With -tags option you can specify build options:  
-no parameter: http server 
-prod : https server 
-certOff: disabling certificate checking for https 
+* no parameter: http server 
+* prod : https server 
+* certOff: disabling certificate checking for https 
 Paramters can be mixed. For example: 
 ``` 
 go install -tags "prod certOff" load_balancer/reverseProxy 
