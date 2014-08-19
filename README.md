@@ -55,7 +55,7 @@ go install -tags "prod certOff" load_balancer/reverseProxy
 Note: Use -a option in go install if you didn't change any files after previous install. 
 Config 
 -------- 
-The config folder contains config.txt, cert.pem and key.pem. Cert.pem and key.pem are needed for https server, config.txt contains program configuration. For now it's only multicast address. We recommend not to change that, the same address is used in experiment manager. 
+The config folder contains config.txt, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.txt contains program configuration. For now it's only multicast address. We recommend not to change that, the same address is used in experiment manager. 
 Run 
 ---- 
 To run you have to copy contents of config folder to folder with executable of load balancer. By default it will be $GOPATH/bin 
