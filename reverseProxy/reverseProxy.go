@@ -21,7 +21,14 @@ func main() {
 		ProxyPort:              "9000",
 		ProxyAddress:           "localhost"}
 
-	utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
+	if _, err := utils.RepititveCaller(
+		func() (interface{}, error) {
+			err := utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
+			return nil, err
+		}, nil); err != nil {
+		log.Printf("Registration to Information Service failed")
+		return
+	}
 
 	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: env.TransportCert}
 	http.Handle("/", reverseProxy)
