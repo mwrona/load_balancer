@@ -22,6 +22,7 @@ func main() {
 		ProxyAddress:           "localhost"}
 
 	utils.InformationSeriviseRegistration(context.ProxyAddress, context.ProxyPort)
+	//utils.InformationSeriviseRegistration("149.156.10.32", "64065")
 
 	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: env.TransportCert}
 	http.Handle("/", reverseProxy)
@@ -37,7 +38,7 @@ func main() {
 	log.Printf("Reverse Proxy : Start")
 
 	server := &http.Server{
-		Addr:      ":" + context.ProxyPort,
+		Addr:      ":9000",
 		TLSConfig: env.TLSClientConfigCert,
 	}
 
