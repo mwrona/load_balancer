@@ -2,12 +2,8 @@ Load Balancer
 ============ 
 Contents 
 ---------- 
-* reverseProxy - main load balancer program 
-* server - experiment manager mock 
-* client - client mock,  
+* scalarm_load_balancer - main load balancer program  
 * config - configuraton for load balancer 
-
-Note: server and client may not work with current version of load balancer. They may require some adjustments. 
 
 Installation guide: 
 ---------------------- 
