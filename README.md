@@ -36,7 +36,7 @@ Now you can install load balancer:
 ```` 
 go install scalarm_load_balancer
 ```` 
-This command will install load balancer in $GOPATH/bin. It's name will be reverseProxy 
+This command will install load balancer in $GOPATH/bin. It's name will be scalarm_load_balancer 
 Config 
 -------- 
 The config folder contains config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
