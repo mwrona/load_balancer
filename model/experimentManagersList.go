@@ -109,7 +109,8 @@ func (eml *ExperimentManagersList) GetExperimentManagersList() []string {
 func (eml *ExperimentManagersList) CheckState() {
 	for i := 0; i < len(eml.list); i++ {
 		if eml.list[i].failedConnections <= eml.failedConnectionsLimit {
-			_, err := http.Get("http://" + eml.list[i].address + ":" + eml.list[i].port + "/status")
+			resp, err := http.Get("http://" + eml.list[i].address + ":" + eml.list[i].port + "/status")
+			resp.Body.Close()
 			eml.mutexSL.Lock()
 			if err != nil { // TODO
 				eml.list[i].failedConnections++
