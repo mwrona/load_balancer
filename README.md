@@ -59,4 +59,8 @@ Note: MulticastAddress must be the same as in experiment manager and other servi
 
 Run 
 ---- 
-To run you have to copy contents of config folder to folder with executable of load balancer. By default it will be $GOPATH/bin 
+To run load balancer you have to supply all necessary files (config.json and in https mode cert.pem and key.pem). By default load balancer is looking for config.json in current directory but you can specify different location as program argument. Example:
+```
+scalarm_load_balancer config_folder/my_config.json
+```
+
