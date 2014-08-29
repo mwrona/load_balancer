@@ -8,21 +8,28 @@ import (
 	"strings"
 )
 
-func InformationSeriviseRegistration(address, port string) {
+func InformationSeriviseRegistration(address, port string) error {
 	//TODO
+	log.Printf("Registration to Load Balancer on: " + address + ":" + port)
 	data := url.Values{"address": {address + ":" + port}}
 	request, err := http.NewRequest("POST", "http://localhost:11300/experiment_managers", strings.NewReader(data.Encode()))
-	Check(err)
+	if err != nil {
+		return err
+	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.SetBasicAuth("scalarm", "scalarm")
 
 	client := http.Client{}
 	resp, err := client.Do(request)
-	Check(err)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
-	Check(err)
+	if err != nil {
+		return err
+	}
 	log.Printf(string(body))
-
+	return nil
 }
