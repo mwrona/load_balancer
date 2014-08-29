@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -20,6 +21,11 @@ func main() {
 		configFile = "config.json"
 	}
 	config, err := model.LoadConfig(configFile)
+	if err != nil {
+		fmt.Println("An error occurred while loading configuration: " + configFile)
+		fmt.Println(err.Error())
+		return
+	}
 
 	var TLSClientConfigCert *tls.Config
 	var TransportCert *http.Transport

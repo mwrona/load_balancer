@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"io/ioutil"
-	"scalarm_load_balancer/utils"
 )
 
 type Config struct {
@@ -20,9 +19,13 @@ type Config struct {
 
 func LoadConfig(filename string) (*Config, error) {
 	file, err := ioutil.ReadFile(filename)
-	utils.Check(err)
+	if err != nil {
+		return nil, err
+	}
 	config := &Config{}
 	err = json.Unmarshal(file, config)
-	utils.Check(err)
+	if err != nil {
+		return nil, err
+	}
 	return config, nil
 }
