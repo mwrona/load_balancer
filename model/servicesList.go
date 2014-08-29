@@ -19,12 +19,17 @@ type ServicesList struct {
 	mutexSL                *sync.Mutex
 	failedConnectionsLimit int
 	schema                 string
+	name                   string
 }
 
-func NewServicesList(schema string) *ServicesList {
+func NewServicesList(schema, name string) *ServicesList {
 	//log.Printf("Service List : CreateServicesList")
 	return &ServicesList{it: -1, list: make([]*serviceInfo, 0, 0), mutexSL: &sync.Mutex{},
-		failedConnectionsLimit: 2, schema: schema}
+		failedConnectionsLimit: 5, schema: schema, name: name}
+}
+
+func (sl *ServicesList) Name() string {
+	return sl.name
 }
 
 func (sl *ServicesList) AddService(address string) error {
@@ -34,6 +39,7 @@ func (sl *ServicesList) AddService(address string) error {
 	for _, service := range sl.list {
 		if service.address == address {
 			//log.Printf("Service List : AddService: host already exists")
+			service.failedConnections = 0
 			return errors.New("ServicesList : AddService: host already exists")
 		}
 	}
@@ -103,18 +109,22 @@ func (sl *ServicesList) GetServicesList() []string {
 	return list
 }
 
+func (sl *ServicesList) updateFailedConnections(i, newValue int) {
+	sl.mutexSL.Lock()
+	defer sl.mutexSL.Unlock()
+	sl.list[i].failedConnections = newValue
+}
+
 func (sl *ServicesList) CheckState() {
 	for i := 0; i < len(sl.list); i++ {
 		if sl.list[i].failedConnections <= sl.failedConnectionsLimit {
 			resp, err := http.Get(sl.schema + "://" + sl.list[i].address + "/status")
-			resp.Body.Close()
-			sl.mutexSL.Lock()
 			if err != nil { // TODO
-				sl.list[i].failedConnections++
+				sl.updateFailedConnections(i, sl.list[i].failedConnections+1)
 			} else {
-				sl.list[i].failedConnections = 0
+				resp.Body.Close()
+				sl.updateFailedConnections(i, 0)
 			}
-			sl.mutexSL.Unlock()
 		}
 		if sl.list[i].failedConnections > sl.failedConnectionsLimit {
 			log.Printf("ServicesList : CheckState: removed " + sl.list[i].address + "\n\n")

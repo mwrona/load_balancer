@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -22,8 +21,8 @@ func main() {
 	}
 	config, err := model.LoadConfig(configFile)
 	if err != nil {
-		fmt.Println("An error occurred while loading configuration: " + configFile)
-		fmt.Println(err.Error())
+		log.Println("An error occurred while loading configuration: " + configFile)
+		log.Println(err.Error())
 		return
 	}
 
@@ -31,7 +30,7 @@ func main() {
 	var TransportCert *http.Transport
 
 	if config.CertificateCheckDisable {
-		log.Printf("Reverse Proxy : Certificates checking disabled")
+		log.Printf("Certificates checking disabled")
 		TLSClientConfigCert = &tls.Config{InsecureSkipVerify: true}
 		TransportCert = &http.Transport{
 			TLSClientConfig: TLSClientConfigCert,
@@ -42,11 +41,33 @@ func main() {
 	}
 
 	context := &model.Context{
-		ExperimentManagersList: model.NewServicesList("http"),
-		StorageManagersList:    model.NewServicesList("http"),
-		LoadBalancerAddress:    config.LoadBalancerAddress,
-		LoadBalancerScheme:     config.LoadBalancerScheme,
+		ExperimentManagersList:    model.NewServicesList("http", "ExperimentManager"),
+		StorageManagersList:       model.NewServicesList("http", "StorageManager"),
+		InformationServiceAddress: config.InformationServiceAddress,
+		InformationServiceScheme:  config.InformationServiceScheme,
+		LoadBalancerAddress:       config.LoadBalancerAddress,
+		LoadBalancerScheme:        config.LoadBalancerScheme,
 	}
+
+	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context),
+		Transport: TransportCert}
+	http.Handle("/", reverseProxy)
+
+	http.Handle("/experiment_managers/register", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.RegistrationHandler))
+	http.Handle("/experiment_managers/unregister", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.UnregistrationHandler))
+	http.Handle("/experiment_managers", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.ListHandler))
+
+	http.Handle("/storage_managers/register", model.ServicesListHandler(context.StorageManagersList,
+		handlers.RegistrationHandler))
+	http.Handle("/storage_managers/unregister", model.ServicesListHandler(context.StorageManagersList,
+		handlers.UnregistrationHandler))
+	http.Handle("/storage_managers", model.ServicesListHandler(context.StorageManagersList,
+		handlers.ListHandler))
+
+	http.HandleFunc("/error/", handlers.ErrorHandler)
 
 	if _, err := utils.RepetitiveCaller(
 		func() (interface{}, error) {
@@ -58,31 +79,9 @@ func main() {
 		return
 	}
 
-	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context),
-		Transport: TransportCert}
-	http.Handle("/", reverseProxy)
-
-	http.Handle("experiment_managers/register", model.ServicesListHandler(context.ExperimentManagersList,
-		handlers.RegistrationHandler))
-	http.Handle("experiment_managers/unregister", model.ServicesListHandler(context.ExperimentManagersList,
-		handlers.UnregistrationHandler))
-	http.Handle("experiment_managers/list", model.ServicesListHandler(context.ExperimentManagersList,
-		handlers.ListHandler))
-
-	http.Handle("storage_managers/register", model.ServicesListHandler(context.StorageManagersList,
-		handlers.RegistrationHandler))
-	http.Handle("storage_managers/unregister", model.ServicesListHandler(context.StorageManagersList,
-		handlers.UnregistrationHandler))
-	http.Handle("storage_managers/list", model.ServicesListHandler(context.StorageManagersList,
-		handlers.ListHandler))
-
-	http.HandleFunc("/error/", handlers.ErrorHandler)
-
 	go services.StartMulticastAddressSender(config.LoadBalancerAddress, config.MulticastAddress)
 	go services.ServicesStatusChecker(context.ExperimentManagersList)
 	go services.ServicesStatusChecker(context.StorageManagersList)
-
-	log.Printf("Reverse Proxy : Start")
 
 	server := &http.Server{
 		Addr:      ":" + config.Port,
@@ -95,7 +94,7 @@ func main() {
 		err = server.ListenAndServeTLS(config.CertFilePath, config.KeyFilePath)
 	}
 	if err != nil {
-		fmt.Println("An error occurred while running service on port " + config.Port)
-		fmt.Println(err.Error())
+		log.Println("An error occurred while running service on port " + config.Port)
+		log.Println(err.Error())
 	}
 }
