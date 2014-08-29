@@ -37,21 +37,26 @@ Now you can install load balancer:
 go install scalarm_load_balancer
 ```` 
 This command will install load balancer in $GOPATH/bin. It's name will be reverseProxy 
-Build Options 
----------------- 
-With -tags option you can specify build options:  
-* no parameter: http server 
-* prod : https server 
-* certOff: disabling certificate checking for https 
-
-Paramters can be mixed. For example: 
-``` 
-go install -tags "prod certOff" scalarm_load_balancer
-``` 
-Note: Use -a option in go install if you didn't change any files after previous install. 
 Config 
 -------- 
-The config folder contains config.txt, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.txt contains program configuration. For now it's only multicast address. We recommend not to change that, the same address is used in experiment manager. 
+The config folder contains config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
+Example of config.json:
+````
+{
+	"LoadBalancerAddress": "localhost:9000",
+	"Port": "9000",
+	"MulticastAddress": "224.1.2.3:8000", 
+	"LoadBalancerScheme": "https",
+	"CertificateCheckDisable": true,
+	"InformationServiceAddress": "localhost:11300",
+	"InformationServiceScheme": "http",
+	"CertFilePath": "cert.pem",
+	"KeyFilePath": "key.pem"
+}
+
+````
+Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
+
 Run 
 ---- 
 To run you have to copy contents of config folder to folder with executable of load balancer. By default it will be $GOPATH/bin 

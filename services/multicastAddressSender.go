@@ -2,18 +2,14 @@ package services
 
 import (
 	"net"
-	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/utils"
 	"time"
 
 	"code.google.com/p/go.net/ipv4"
 )
 
-func MulticastAddressSender(proxyAddress, proxyPort string) {
-	config, err := model.LoadConfig()
-	utils.Check(err)
-
-	mcaddr, err := net.ResolveUDPAddr("udp", config.Address)
+func MulticastAddressSender(loadBalancerAddress, multicastAddress string) {
+	mcaddr, err := net.ResolveUDPAddr("udp", multicastAddress)
 	utils.Check(err)
 
 	// conn, err := net.ListenMulticastUDP("udp", nil, mcaddr)
@@ -29,7 +25,7 @@ func MulticastAddressSender(proxyAddress, proxyPort string) {
 	conn.SetMulticastLoopback(true)
 
 	b := make([]byte, 20)
-	copy(b, proxyAddress+":"+proxyPort)
+	copy(b, loadBalancerAddress)
 	ticker := time.NewTicker(5 * time.Second)
 	for {
 		select {
