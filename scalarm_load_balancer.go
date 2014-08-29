@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"os"
 	"scalarm_load_balancer/handlers"
 	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
@@ -12,7 +13,13 @@ import (
 )
 
 func main() {
-	config, err := model.LoadConfig("config.json")
+	var configFile string
+	if len(os.Args) == 2 {
+		configFile = os.Args[1]
+	} else {
+		configFile = "config.json"
+	}
+	config, err := model.LoadConfig(configFile)
 
 	var TLSClientConfigCert *tls.Config
 	var TransportCert *http.Transport
