@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func RepititveCaller(f func() (interface{}, error), intervals []int) (out interface{}, err error) {
+func RepetitiveCaller(f func() (interface{}, error), intervals []int, functionName string) (out interface{}, err error) {
 	if intervals == nil {
 		intervals = []int{15, 30, 60, 120, 240}
 	}
@@ -18,7 +18,7 @@ func RepititveCaller(f func() (interface{}, error), intervals []int) (out interf
 		if err == nil || duration == -1 {
 			return
 		}
-		log.Printf("RepititveCaller : call failed, err: \n" + err.Error() + "\nReattempt in " + strconv.Itoa(duration) + "s")
+		log.Printf("RepetitiveCaller : call " + functionName + " failed, err: \n" + err.Error() + "\nReattempt in " + strconv.Itoa(duration) + "s")
 		time.Sleep(time.Second * time.Duration(duration))
 	}
 	return

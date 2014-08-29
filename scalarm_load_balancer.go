@@ -42,31 +42,45 @@ func main() {
 	}
 
 	context := &model.Context{
-		ExperimentManagersList: model.NewExperimentManagersList(),
+		ExperimentManagersList: model.NewServicesList("http"),
+		StorageManagersList:    model.NewServicesList("http"),
 		LoadBalancerAddress:    config.LoadBalancerAddress,
 		LoadBalancerScheme:     config.LoadBalancerScheme,
 	}
 
-	if _, err := utils.RepititveCaller(
+	if _, err := utils.RepetitiveCaller(
 		func() (interface{}, error) {
 			return nil, utils.InformationServiseRegistration(config.LoadBalancerAddress,
 				config.InformationServiceAddress,
 				config.InformationServiceScheme)
-		}, nil); err != nil {
+		}, nil, "InformationServiseRegistration"); err != nil {
 		log.Printf("Registration to Information Service failed")
 		return
 	}
 
-	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: TransportCert}
+	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context),
+		Transport: TransportCert}
 	http.Handle("/", reverseProxy)
 
-	http.Handle("/register", model.ContextHandler(context, handlers.RegisterHandler))
-	http.Handle("/unregister", model.ContextHandler(context, handlers.UnregisterHandler))
-	http.Handle("/list", model.ContextHandler(context, handlers.ListHandler))
+	http.Handle("experiment_managers/register", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.RegistrationHandler))
+	http.Handle("experiment_managers/unregister", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.UnregistrationHandler))
+	http.Handle("experiment_managers/list", model.ServicesListHandler(context.ExperimentManagersList,
+		handlers.ListHandler))
+
+	http.Handle("storage_managers/register", model.ServicesListHandler(context.StorageManagersList,
+		handlers.RegistrationHandler))
+	http.Handle("storage_managers/unregister", model.ServicesListHandler(context.StorageManagersList,
+		handlers.UnregistrationHandler))
+	http.Handle("storage_managers/list", model.ServicesListHandler(context.StorageManagersList,
+		handlers.ListHandler))
+
 	http.HandleFunc("/error/", handlers.ErrorHandler)
 
-	go services.MulticastAddressSender(config.LoadBalancerAddress, config.MulticastAddress)
-	go services.ExperimentManagersStatusChecker(context.ExperimentManagersList)
+	go services.StartMulticastAddressSender(config.LoadBalancerAddress, config.MulticastAddress)
+	go services.ServicesStatusChecker(context.ExperimentManagersList)
+	go services.ServicesStatusChecker(context.StorageManagersList)
 
 	log.Printf("Reverse Proxy : Start")
 
@@ -80,5 +94,8 @@ func main() {
 	} else { // "https"
 		err = server.ListenAndServeTLS(config.CertFilePath, config.KeyFilePath)
 	}
-	utils.Check(err)
+	if err != nil {
+		fmt.Println("An error occurred while running service on port " + config.Port)
+		fmt.Println(err.Error())
+	}
 }

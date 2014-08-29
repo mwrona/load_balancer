@@ -7,42 +7,42 @@ import (
 	"scalarm_load_balancer/model"
 )
 
-func RegisterHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
+func RegistrationHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	address := r.FormValue("address")
 	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
-		log.Printf("Reverse Proxy : registered server: error, missing addres\n\n")
+		log.Printf("RegistrationHandler: error, missing addres\n\n")
 	} else {
-		if err := context.ExperimentManagersList.AddServer(address); err == nil {
-			fmt.Fprintf(w, "Registered server:  %s", address)
-			log.Printf("Reverse Proxy : registered server: " + address + "\n\n")
+		if err := servicesList.AddService(address); err == nil {
+			fmt.Fprintf(w, "Registered service:  %s", address)
+			log.Printf("RegistrationHandler: registered service: " + address + "\n\n")
 		} else {
 			fmt.Fprintf(w, "Host already exists")
-			log.Printf("Reverse Proxy : %v \n\n", err)
+			log.Printf("RegistrationHandler: %v \n\n", err)
 		}
 	}
 }
 
-func UnregisterHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
+func UnregistrationHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	address := r.FormValue("address")
 	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
-		log.Printf("Reverse Proxy : error, missing address\n\n")
+		log.Printf("UnregistrationHandler: error, missing address\n\n")
 	} else {
-		context.ExperimentManagersList.UnregisterServer(address)
-		fmt.Fprintf(w, "Unregistered server:  %s", address)
-		log.Printf("Reverse Proxy : unregistered server: " + address + "\n\n")
+		servicesList.UnregisterService(address)
+		fmt.Fprintf(w, "Unregistered service:  %s", address)
+		log.Printf("UnregistrationHandler: unregistered service: " + address + "\n\n")
+	}
+}
+
+func ListHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+	log.Printf("ListHandler: printing services list\n\n")
+	fmt.Fprintln(w, "services available:\n")
+	for _, val := range servicesList.GetServicesList() {
+		fmt.Fprintln(w, val)
 	}
 }
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Server list is empty or all servers are not responding.")
-}
-
-func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
-	log.Printf("Reverse Proxy : printing servers list\n\n")
-	fmt.Fprintln(w, "Servers available:\n")
-	for _, val := range context.ExperimentManagersList.GetExperimentManagersList() {
-		fmt.Fprintln(w, val)
-	}
+	fmt.Fprintf(w, "Service list is empty or all services are not responding.")
 }
