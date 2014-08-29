@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"load_balancer/reverseProxy/model"
 	"log"
 	"net/http"
+	"scalarm_load_balancer/model"
 )
 
 func RegisterHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {

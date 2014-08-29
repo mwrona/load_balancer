@@ -1,9 +1,9 @@
 package services
 
 import (
-	"load_balancer/reverseProxy/model"
-	"load_balancer/reverseProxy/utils"
 	"net"
+	"scalarm_load_balancer/model"
+	"scalarm_load_balancer/utils"
 	"time"
 
 	"code.google.com/p/go.net/ipv4"

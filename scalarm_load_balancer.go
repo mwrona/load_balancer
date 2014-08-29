@@ -1,14 +1,14 @@
 package main
 
 import (
-	"load_balancer/reverseProxy/env"
-	"load_balancer/reverseProxy/handlers"
-	"load_balancer/reverseProxy/model"
-	"load_balancer/reverseProxy/services"
-	"load_balancer/reverseProxy/utils"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"scalarm_load_balancer/env"
+	"scalarm_load_balancer/handlers"
+	"scalarm_load_balancer/model"
+	"scalarm_load_balancer/services"
+	"scalarm_load_balancer/utils"
 )
 
 func main() {

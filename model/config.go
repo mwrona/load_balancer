@@ -2,7 +2,7 @@ package model
 
 import (
 	"io/ioutil"
-	"load_balancer/reverseProxy/utils"
+	"scalarm_load_balancer/utils"
 )
 
 type Config struct {

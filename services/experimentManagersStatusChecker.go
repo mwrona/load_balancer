@@ -1,7 +1,7 @@
 package services
 
 import (
-	"load_balancer/reverseProxy/model"
+	"scalarm_load_balancer/model"
 	"time"
 )
 

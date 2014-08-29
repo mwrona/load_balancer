@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"load_balancer/reverseProxy/env"
-	"load_balancer/reverseProxy/model"
 	"log"
 	"net/http"
+	"scalarm_load_balancer/env"
+	"scalarm_load_balancer/model"
 	"strings"
 )
 
