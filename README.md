@@ -26,15 +26,15 @@ Installation
 -------------- 
 You can download it directly from GitHub. You have to download it into your $GOPATH/src folder 
 ``` 
-git clone https://github.com/mwrona/load_balancer.git 
+git clone https://github.com/mwrona/scalarm_load_balancer.git 
 ``` 
 Now run this command to download all dependencies: 
 ``` 
-go get load_balancer/reverseProxy 
+go get scalarm_load_balancer 
 ``` 
 Now you can install load balancer: 
 ```` 
-go install load_balancer/reverseProxy 
+go install scalarm_load_balancer
 ```` 
 This command will install load balancer in $GOPATH/bin. It's name will be reverseProxy 
 Build Options 
@@ -46,7 +46,7 @@ With -tags option you can specify build options:
 
 Paramters can be mixed. For example: 
 ``` 
-go install -tags "prod certOff" load_balancer/reverseProxy 
+go install -tags "prod certOff" scalarm_load_balancer
 ``` 
 Note: Use -a option in go install if you didn't change any files after previous install. 
 Config 
