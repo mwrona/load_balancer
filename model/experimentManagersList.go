@@ -9,7 +9,6 @@ import (
 )
 
 type experimentManagerInfo struct {
-	port              string
 	address           string
 	failedConnections int
 }
@@ -21,39 +20,35 @@ type ExperimentManagersList struct {
 	failedConnectionsLimit int
 }
 
-func (experimentManagerInfo *experimentManagerInfo) FullAddress() string {
-	return experimentManagerInfo.address + ":" + experimentManagerInfo.port
-}
-
 func NewExperimentManagersList() *ExperimentManagersList {
 	//log.Printf("Server List : CreateExperimentManagersList")
 	return &ExperimentManagersList{it: -1, list: make([]*experimentManagerInfo, 0, 0), mutexSL: &sync.Mutex{}, failedConnectionsLimit: 2}
 }
 
-func (eml *ExperimentManagersList) AddServer(address, port string) error {
+func (eml *ExperimentManagersList) AddServer(address string) error {
 	eml.mutexSL.Lock()
 	defer eml.mutexSL.Unlock()
 
 	for _, server := range eml.list {
-		if server.port == port && server.address == address {
+		if server.address == address {
 			//log.Printf("Server List : AddServer: host already exists")
 			return errors.New("Server List : AddServer: host already exists")
 		}
 	}
 
-	experimentManagerInfo := &experimentManagerInfo{port: port, address: address}
+	experimentManagerInfo := &experimentManagerInfo{address: address}
 
 	eml.list = append(eml.list, experimentManagerInfo)
 	//log.Printf("Server List : AddServer: added " + eml.list[len(eml.list)-1].GetFullAddress())
 	return nil
 }
 
-func (eml *ExperimentManagersList) UnregisterServer(address, port string) {
+func (eml *ExperimentManagersList) UnregisterServer(address string) {
 	eml.mutexSL.Lock()
 	defer eml.mutexSL.Unlock()
 
 	for _, v := range eml.list {
-		if v.address == address && v.port == port {
+		if v.address == address {
 			v.failedConnections = 1000
 			break
 		}
@@ -93,7 +88,7 @@ func (eml *ExperimentManagersList) GetNext() (string, error) {
 		}
 	}
 
-	res := eml.list[eml.it].FullAddress()
+	res := eml.list[eml.it].address
 	//log.Printf("Server List : GetNext: got " + res)
 	return res, nil
 }
@@ -101,7 +96,7 @@ func (eml *ExperimentManagersList) GetNext() (string, error) {
 func (eml *ExperimentManagersList) GetExperimentManagersList() []string {
 	list := make([]string, len(eml.list), len(eml.list))
 	for id, val := range eml.list {
-		list[id] = val.FullAddress()
+		list[id] = val.address
 	}
 	return list
 }
@@ -109,7 +104,7 @@ func (eml *ExperimentManagersList) GetExperimentManagersList() []string {
 func (eml *ExperimentManagersList) CheckState() {
 	for i := 0; i < len(eml.list); i++ {
 		if eml.list[i].failedConnections <= eml.failedConnectionsLimit {
-			resp, err := http.Get("http://" + eml.list[i].address + ":" + eml.list[i].port + "/status")
+			resp, err := http.Get("http://" + eml.list[i].address + "/status")
 			resp.Body.Close()
 			eml.mutexSL.Lock()
 			if err != nil { // TODO
@@ -120,15 +115,15 @@ func (eml *ExperimentManagersList) CheckState() {
 			eml.mutexSL.Unlock()
 		}
 		if eml.list[i].failedConnections > eml.failedConnectionsLimit {
-			log.Printf("Server List : Check State: removed " + eml.list[i].address + ":" + eml.list[i].port + "\n\n")
+			log.Printf("Server List : Check State: removed " + eml.list[i].address + "\n\n")
 			eml.removeServer(i)
 			i--
 		} else {
 			if eml.list[i].failedConnections == 0 {
 				//log.Printf("Server List : Check State: " + eml.list[i].address + ":" + eml.list[i].port + " ok")
 			} else {
-				log.Printf("Server List : Check State: " + eml.list[i].address + ":" +
-					eml.list[i].port + " failed " + strconv.Itoa(eml.list[i].failedConnections) + " times\n\n")
+				log.Printf("Server List : Check State: " + eml.list[i].address + " failed " +
+					strconv.Itoa(eml.list[i].failedConnections) + " times\n\n")
 			}
 
 		}

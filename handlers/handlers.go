@@ -8,18 +8,14 @@ import (
 )
 
 func RegisterHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
-	port := r.FormValue("port")
 	address := r.FormValue("address")
-	if port == "" {
-		fmt.Fprintf(w, "Error: missing port")
-		log.Printf("Reverse Proxy : registered server: error, missing port\n\n")
-	} else if address == "" {
+	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
 		log.Printf("Reverse Proxy : registered server: error, missing addres\n\n")
 	} else {
-		if err := context.ExperimentManagersList.AddServer(address, port); err == nil {
-			fmt.Fprintf(w, "Registered server:  %s", address+":"+port)
-			log.Printf("Reverse Proxy : registered server: " + address + ":" + port + "\n\n")
+		if err := context.ExperimentManagersList.AddServer(address); err == nil {
+			fmt.Fprintf(w, "Registered server:  %s", address)
+			log.Printf("Reverse Proxy : registered server: " + address + "\n\n")
 		} else {
 			fmt.Fprintf(w, "Host already exists")
 			log.Printf("Reverse Proxy : %v \n\n", err)
@@ -28,18 +24,14 @@ func RegisterHandler(context *model.Context, w http.ResponseWriter, r *http.Requ
 }
 
 func UnregisterHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
-	port := r.FormValue("port")
 	address := r.FormValue("address")
-	if port == "" {
-		fmt.Fprintf(w, "Error: missing port")
-		log.Printf("Reverse Proxy : error, missing port\n\n")
-	} else if address == "" {
+	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
 		log.Printf("Reverse Proxy : error, missing address\n\n")
 	} else {
-		context.ExperimentManagersList.UnregisterServer(address, port)
-		fmt.Fprintf(w, "Unregistered server:  %s", address+":"+port)
-		log.Printf("Reverse Proxy : unregistered server: " + address + ":" + port + "\n\n")
+		context.ExperimentManagersList.UnregisterServer(address)
+		fmt.Fprintf(w, "Unregistered server:  %s", address)
+		log.Printf("Reverse Proxy : unregistered server: " + address + "\n\n")
 	}
 }
 
