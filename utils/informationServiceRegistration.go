@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-func InformationServiseRegistration(loadBalancerAddress, informationServiseAddress, informationServiceScheme string) error {
+func InformationServiceRegistration(loadBalancerAddress, informationServiceAddress, informationServiceScheme string) error {
 
-	log.Printf("Registration to Load Balancer on: " + informationServiseAddress)
+	log.Printf("Registration to Load Balancer on: " + informationServiceAddress)
 	data := url.Values{"address": {loadBalancerAddress}}
-	request, err := http.NewRequest("POST", informationServiceScheme+"://"+informationServiseAddress+"/experiment_managers", strings.NewReader(data.Encode()))
+	request, err := http.NewRequest("POST", informationServiceScheme+"://"+informationServiceAddress+"/experiment_managers", strings.NewReader(data.Encode()))
 	if err != nil {
 		return err
 	}

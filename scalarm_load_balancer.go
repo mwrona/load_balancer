@@ -71,10 +71,13 @@ func main() {
 
 	if _, err := utils.RepetitiveCaller(
 		func() (interface{}, error) {
-			return nil, utils.InformationServiseRegistration(config.LoadBalancerAddress,
+			return nil, utils.InformationServiceRegistration(config.LoadBalancerAddress,
 				config.InformationServiceAddress,
 				config.InformationServiceScheme)
-		}, nil, "InformationServiseRegistration"); err != nil {
+		},
+		nil,
+		"InformationServiseRegistration",
+	); err != nil {
 		log.Printf("Registration to Information Service failed")
 		return
 	}

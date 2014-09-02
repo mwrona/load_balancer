@@ -19,7 +19,10 @@ func StartMulticastAddressSender(loadBalancerAddress, multicastAddress string) {
 				go multicastAddressSender(loadBalancerAddress, multicastAddress, c)
 				err := <-c
 				return nil, err
-			}, []int{5, 5, 10, 10, 30}, "multicastAddressSender"); err != nil {
+			},
+			[]int{5, 5, 10, 10, 30},
+			"multicastAddressSender",
+		); err != nil {
 			log.Printf("Unable to send address via multicast, stopping load balancer")
 			os.Exit(1) // TODO
 		}
