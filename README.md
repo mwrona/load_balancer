@@ -50,6 +50,8 @@ Example of config.json:
 	"CertificateCheckDisable": true,
 	"InformationServiceAddress": "localhost:11300",
 	"InformationServiceScheme": "http",
+	"InformationServiceUser" : "scalarm",
+	"InformationServicePass" : "scalarm",
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem"
 }

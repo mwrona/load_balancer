@@ -13,6 +13,8 @@ type Config struct {
 	CertificateCheckDisable   bool
 	InformationServiceAddress string
 	InformationServiceScheme  string
+	InformationServiceUser    string
+	InformationServicePass    string
 	CertFilePath              string
 	KeyFilePath               string
 }

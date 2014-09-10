@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-func InformationServiceRegistration(loadBalancerAddress, informationServiceAddress, informationServiceScheme string) error {
+func InformationServiceRegistration(loadBalancerAddress, informationServiceAddress, informationServiceScheme,
+	informationServiceUser, informationServicePass string) error {
 
 	log.Printf("Registration to Load Balancer on: " + informationServiceAddress)
 	data := url.Values{"address": {loadBalancerAddress}}
@@ -17,7 +18,7 @@ func InformationServiceRegistration(loadBalancerAddress, informationServiceAddre
 		return err
 	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth("scalarm", "scalarm")
+	request.SetBasicAuth(informationServiceUser, informationServicePass)
 
 	client := http.Client{}
 	resp, err := client.Do(request)

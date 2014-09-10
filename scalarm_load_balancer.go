@@ -73,7 +73,9 @@ func main() {
 		func() (interface{}, error) {
 			return nil, utils.InformationServiceRegistration(config.LoadBalancerAddress,
 				config.InformationServiceAddress,
-				config.InformationServiceScheme)
+				config.InformationServiceScheme,
+				config.InformationServiceUser,
+				config.InformationServicePass)
 		},
 		nil,
 		"InformationServiseRegistration",
