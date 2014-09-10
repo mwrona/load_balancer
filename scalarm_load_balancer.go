@@ -26,6 +26,16 @@ func main() {
 		return
 	}
 
+	if t := os.Getenv("INFORMATION_SERVICE_URL"); t != "" {
+		config.InformationServiceAddress = t
+	}
+	if t := os.Getenv("INFORMATION_SERVICE_LOGIN"); t != "" {
+		config.InformationServiceUser = t
+	}
+	if t := os.Getenv("INFORMATION_SERVICE_PASSWORD"); t != "" {
+		config.InformationServicePass = t
+	}
+
 	var TLSClientConfigCert *tls.Config
 	var TransportCert *http.Transport
 
