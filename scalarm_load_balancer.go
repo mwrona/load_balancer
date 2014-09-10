@@ -21,9 +21,7 @@ func main() {
 	}
 	config, err := model.LoadConfig(configFile)
 	if err != nil {
-		log.Println("An error occurred while loading configuration: " + configFile)
-		log.Println(err.Error())
-		return
+		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
 	}
 
 	if t := os.Getenv("INFORMATION_SERVICE_URL"); t != "" {
@@ -90,8 +88,7 @@ func main() {
 		nil,
 		"InformationServiseRegistration",
 	); err != nil {
-		log.Printf("Registration to Information Service failed")
-		return
+		log.Fatal("Registration to Information Service failed")
 	}
 
 	go services.StartMulticastAddressSender(config.LocalLoadBalancerAddress, config.MulticastAddress)
@@ -106,10 +103,26 @@ func main() {
 	if config.LoadBalancerScheme == "http" {
 		err = server.ListenAndServe()
 	} else { // "https"
+		if config.Port == "443" {
+			go func() {
+				serverHTTP := &http.Server{
+					Addr: ":80",
+					Handler: http.HandlerFunc(
+						func(w http.ResponseWriter, req *http.Request) {
+							http.Redirect(w, req, "https://"+config.LocalLoadBalancerAddress+req.RequestURI,
+								http.StatusMovedPermanently)
+						}),
+				}
+				err = serverHTTP.ListenAndServe()
+				if err != nil {
+					log.Fatal("An error occurred while running service on port 80\n" + err.Error())
+				}
+			}()
+		}
+
 		err = server.ListenAndServeTLS(config.CertFilePath, config.KeyFilePath)
 	}
 	if err != nil {
-		log.Println("An error occurred while running service on port " + config.Port)
-		log.Println(err.Error())
+		log.Fatal("An error occurred while running service on port " + config.Port + "\n" + err.Error())
 	}
 }

@@ -3,7 +3,6 @@ package services
 import (
 	"log"
 	"net"
-	"os"
 	"scalarm_load_balancer/utils"
 	"time"
 
@@ -23,8 +22,7 @@ func StartMulticastAddressSender(loadBalancerAddress, multicastAddress string) {
 			[]int{5, 5, 10, 10, 30},
 			"multicastAddressSender",
 		); err != nil {
-			log.Printf("Unable to send address via multicast, stopping load balancer")
-			os.Exit(1) // TODO
+			log.Fatal("Unable to send address via multicast, stopping load balancer")
 		}
 
 		err := <-c
