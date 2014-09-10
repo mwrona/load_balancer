@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"runtime"
 	"scalarm_load_balancer/handlers"
 	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
@@ -15,6 +16,8 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	var configFile string
 	if len(os.Args) == 2 {
 		configFile = os.Args[1]
