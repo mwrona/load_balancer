@@ -3,7 +3,7 @@ Load Balancer
 Contents 
 ---------- 
 * scalarm_load_balancer - main load balancer program  
-* config - configuraton for load balancer 
+* config - example configuraton for load balancer 
 
 Installation guide: 
 ---------------------- 
