@@ -45,7 +45,7 @@ func main() {
 		StorageManagersList:       model.NewServicesList("http", "StorageManager"),
 		InformationServiceAddress: config.InformationServiceAddress,
 		InformationServiceScheme:  config.InformationServiceScheme,
-		LoadBalancerAddress:       config.LoadBalancerAddress,
+		LoadBalancerAddress:       config.LocalLoadBalancerAddress,
 		LoadBalancerScheme:        config.LoadBalancerScheme,
 	}
 
@@ -71,7 +71,7 @@ func main() {
 
 	if _, err := utils.RepetitiveCaller(
 		func() (interface{}, error) {
-			return nil, utils.InformationServiceRegistration(config.LoadBalancerAddress,
+			return nil, utils.InformationServiceRegistration(config.RemoteLoadBalancerAddress,
 				config.InformationServiceAddress,
 				config.InformationServiceScheme,
 				config.InformationServiceUser,
@@ -84,7 +84,7 @@ func main() {
 		return
 	}
 
-	go services.StartMulticastAddressSender(config.LoadBalancerAddress, config.MulticastAddress)
+	go services.StartMulticastAddressSender(config.LocalLoadBalancerAddress, config.MulticastAddress)
 	go services.ServicesStatusChecker(context.ExperimentManagersList)
 	go services.ServicesStatusChecker(context.StorageManagersList)
 

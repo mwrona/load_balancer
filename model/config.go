@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	LoadBalancerAddress       string
+	RemoteLoadBalancerAddress string
 	Port                      string
 	MulticastAddress          string
+	LocalLoadBalancerAddress  string
 	LoadBalancerScheme        string
 	CertificateCheckDisable   bool
 	InformationServiceAddress string

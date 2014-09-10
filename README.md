@@ -43,7 +43,8 @@ The config folder contains config.json, cert.pem and key.pem. The cert.pem and k
 Example of config.json:
 ````
 {
-	"LoadBalancerAddress": "localhost:9000",
+	"LocalLoadBalancerAddress": "localhost:9000",
+	"RemoteBalancerAddress": "localhost:9000",
 	"Port": "9000",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
