@@ -16,6 +16,8 @@ type Config struct {
 	InformationServiceScheme  string
 	InformationServiceUser    string
 	InformationServicePass    string
+	LoadBalancerUser          string
+	LoadBalancerPass          string
 	CertFilePath              string
 	KeyFilePath               string
 }

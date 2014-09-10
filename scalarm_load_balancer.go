@@ -10,6 +10,8 @@ import (
 	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
 	"scalarm_load_balancer/utils"
+
+	"github.com/rcrowley/go-tigertonic"
 )
 
 func main() {
@@ -61,17 +63,27 @@ func main() {
 		Transport: TransportCert}
 	http.Handle("/", reverseProxy)
 
-	http.Handle("/experiment_managers/register", model.ServicesListHandler(context.ExperimentManagersList,
-		handlers.RegistrationHandler))
-	http.Handle("/experiment_managers/unregister", model.ServicesListHandler(context.ExperimentManagersList,
-		handlers.UnregistrationHandler))
+	credentials := map[string]string{config.LoadBalancerUser: config.LoadBalancerPass}
+
+	http.Handle("/experiment_managers/register", tigertonic.HTTPBasicAuth(
+		credentials,
+		"insert realm",
+		model.ServicesListHandler(context.ExperimentManagersList, handlers.RegistrationHandler)))
+	http.Handle("/experiment_managers/unregister", tigertonic.HTTPBasicAuth(
+		credentials,
+		"insert realm",
+		model.ServicesListHandler(context.ExperimentManagersList, handlers.UnregistrationHandler)))
 	http.Handle("/experiment_managers", model.ServicesListHandler(context.ExperimentManagersList,
 		handlers.ListHandler))
 
-	http.Handle("/storage_managers/register", model.ServicesListHandler(context.StorageManagersList,
-		handlers.RegistrationHandler))
-	http.Handle("/storage_managers/unregister", model.ServicesListHandler(context.StorageManagersList,
-		handlers.UnregistrationHandler))
+	http.Handle("/storage_managers/register", tigertonic.HTTPBasicAuth(
+		credentials,
+		"insert realm",
+		model.ServicesListHandler(context.StorageManagersList, handlers.RegistrationHandler)))
+	http.Handle("/storage_managers/unregister", tigertonic.HTTPBasicAuth(
+		credentials,
+		"insert realm",
+		model.ServicesListHandler(context.StorageManagersList, handlers.UnregistrationHandler)))
 	http.Handle("/storage_managers", model.ServicesListHandler(context.StorageManagersList,
 		handlers.ListHandler))
 
