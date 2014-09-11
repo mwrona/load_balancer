@@ -124,7 +124,7 @@ func main() {
 					Addr: ":80",
 					Handler: http.HandlerFunc(
 						func(w http.ResponseWriter, req *http.Request) {
-							http.Redirect(w, req, "https://"+config.LocalLoadBalancerAddress+req.RequestURI,
+							http.Redirect(w, req, "https://"+config.RemoteLoadBalancerAddress+req.RequestURI,
 								http.StatusMovedPermanently)
 						}),
 				}

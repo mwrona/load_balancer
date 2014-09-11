@@ -53,6 +53,8 @@ Example of config.json:
 	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
+	"LoadBalancerUser" : "scalarm",
+	"LoadBalancerPass" : "scalarm",
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem"
 }
