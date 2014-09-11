@@ -25,7 +25,7 @@ type ServicesList struct {
 func NewServicesList(schema, name string) *ServicesList {
 	//log.Printf("Service List : CreateServicesList")
 	return &ServicesList{it: -1, list: make([]*serviceInfo, 0, 0), mutexSL: &sync.Mutex{},
-		failedConnectionsLimit: 5, schema: schema, name: name}
+		failedConnectionsLimit: 6, schema: schema, name: name}
 }
 
 func (sl *ServicesList) Name() string {
