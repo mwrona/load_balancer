@@ -3,7 +3,7 @@ Load Balancer
 Contents 
 ---------- 
 * scalarm_load_balancer - main load balancer program  
-* config - configuraton for load balancer 
+* config - example configuraton for load balancer 
 
 Installation guide: 
 ---------------------- 
@@ -61,6 +61,8 @@ Example of config.json:
 
 ````
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
+
+If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries.
 
 Run 
 ---- 
