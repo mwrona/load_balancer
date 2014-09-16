@@ -48,7 +48,6 @@ Example of config.json:
 	"Port": "9000",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
-	"CertificateCheckDisable": true,
 	"InformationServiceAddress": "localhost:11300",
 	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",

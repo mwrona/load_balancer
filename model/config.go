@@ -11,7 +11,6 @@ type Config struct {
 	MulticastAddress          string
 	LocalLoadBalancerAddress  string
 	LoadBalancerScheme        string
-	CertificateCheckDisable   bool
 	InformationServiceAddress string
 	InformationServiceScheme  string
 	InformationServiceUser    string

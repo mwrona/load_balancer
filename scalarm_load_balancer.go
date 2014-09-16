@@ -42,7 +42,7 @@ func main() {
 	var TLSClientConfigCert *tls.Config
 	var TransportCert *http.Transport
 
-	if config.CertificateCheckDisable {
+	if false {
 		log.Printf("Certificates checking disabled")
 		TLSClientConfigCert = &tls.Config{InsecureSkipVerify: true}
 		TransportCert = &http.Transport{
