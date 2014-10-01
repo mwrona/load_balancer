@@ -39,13 +39,13 @@ go install scalarm_load_balancer
 This command will install load balancer in $GOPATH/bin. It's name will be scalarm_load_balancer 
 Config 
 -------- 
-The config folder contains config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
+The config consists of config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
 Example of config.json:
 ````
 {
-	"LocalLoadBalancerAddress": "localhost:9000",
-	"RemoteBalancerAddress": "localhost:9000",
-	"Port": "9000",
+	"LocalLoadBalancerAddress": "localhost",
+	"RemoteLoadBalancerAddress": "149.156.10.32:13585",
+	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
 	"InformationServiceAddress": "localhost:11300",
@@ -61,7 +61,13 @@ Example of config.json:
 ````
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
-If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries.
+Optional entries:
+* LocalLoadBalancerAddress - default: "localhost"
+* LoadBalancerScheme - defaulf: "https"
+* InformationServiceScheme - default: "http"
+* CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
+
+If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 
 Run 
 ---- 

@@ -31,5 +31,16 @@ func LoadConfig(filename string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if config.LoadBalancerScheme == "" {
+		config.LoadBalancerScheme = "https"
+	}
+	if config.InformationServiceScheme == "" {
+		config.InformationServiceScheme = "http"
+	}
+	if config.LocalLoadBalancerAddress == "" {
+		config.LocalLoadBalancerAddress = "localhost"
+	}
+
 	return config, nil
 }
