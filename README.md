@@ -67,7 +67,7 @@ Description:
 * PublicLoadBalancerAddress - this address is registered in Information Service
 * Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
-* LoadBalancerScheme - optional, bydefaulf: "https"; protocol on which load balancer works 
+* LoadBalancerScheme - optional, by defaulf: "https"; protocol on which load balancer works 
 * InformationServiceAddress - address of Information Service
 * InformationServiceUser - login to Information Service
 * InformationServicePass - password to Information Service
