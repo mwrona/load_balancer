@@ -44,11 +44,9 @@ The config consists of config.json, cert.pem and key.pem. The cert.pem and key.p
 Example of config.json:
 ````
 {
-	"PrivateLoadBalancerAddress": "localhost",
 	"PublicLoadBalancerAddress": "149.156.10.32:13585",
 	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
-	"LoadBalancerScheme": "https",
 	"InformationServiceAddress": "localhost:11300",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
@@ -62,15 +60,25 @@ Example of config.json:
 }
 
 ````
-Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
-Optional entries:
-* PrivateLoadBalancerAddress - default: "localhost"
-* LoadBalancerScheme - defaulf: "https"
-* CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
-* In RedirectionConfig: 
- * DisableStatusChecking - default: false
- * Scheme - default: "http"
+
+Description:
+* PrivateLoadBalancerAddress optional, by default: "localhost"; this address is send via multicast
+* PublicLoadBalancerAddress - this address is registered in Information Service
+* Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
+* MulticastAddress - address used to distribute load balancer private address
+* LoadBalancerScheme - optional, bydefaulf: "https"; protocol on which load balancer works 
+* InformationServiceAddress - address of Information Service
+* InformationServiceUser - login to Information Service
+* InformationServicePass - password to Information Service
+* CertFilePath, KeyFilePath optional when LoadBalancerScheme is "http"; path co certificate files
+* RedirectionConfig - config of redirection policy: 
+ * Path - path to servies
+ * Name - name of service type
+ * DisableStatusChecking - optional, by default: false; disabling periadical status checking
+ * Scheme - optional, by default: "http"; service scheme
+
+Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 
