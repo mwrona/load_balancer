@@ -82,12 +82,5 @@ scalarm_load_balancer config_folder/my_config.json
 ```
 API
 -----
-* / - redirection to Experimet Managers
-* /information - redirection to Information Services
-* /storage - redirection to Storage Managers
-* /experiment_managers - list of available Experiments Managers
-* /experiment_managers/register - POST with parameter address, registration of new Experiment Manager
-* /experiment_managers/unregister - POST with parameter address, unregistration of Experiment Manager
-* /storage_managers - list of available Storage Managers
-* /storage_managers/register - POST with parameter address, registration of new Storage Managers
-* /storage_managers/unregister - POST with parameter address, unregistration of Storage Managers
+* /list - with parameter 'name'
+* /register - POST with parameter 'address' and 'name'
