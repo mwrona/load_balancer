@@ -52,10 +52,13 @@ Example of config.json:
 	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
-	"LoadBalancerUser" : "scalarm",
-	"LoadBalancerPass" : "scalarm",
 	"CertFilePath": "cert.pem",
-	"KeyFilePath": "key.pem"
+	"KeyFilePath": "key.pem",
+	"RedirectionConfig" : [
+		{"Path": "/", 			 "Name": "ExperimentManager"},
+		{"Path": "/storage", 	 "Name": "StorageManager"},
+		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true, "Scheme": "http"}
+	]
 }
 
 ````
@@ -64,8 +67,10 @@ Note: MulticastAddress must be the same as in experiment manager and other servi
 Optional entries:
 * LocalLoadBalancerAddress - default: "localhost"
 * LoadBalancerScheme - defaulf: "https"
-* InformationServiceScheme - default: "http"
 * CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
+* In RedirectionConfig: 
+** DisableStatusChecking - default: false
+** Scheme - default: "http"
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 

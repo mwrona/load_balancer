@@ -18,14 +18,21 @@ type ServicesList struct {
 	it                     int
 	mutexSL                *sync.Mutex
 	failedConnectionsLimit int
-	schema                 string
+	scheme                 string
 	name                   string
 }
 
-func NewServicesList(schema, name string) *ServicesList {
+func NewServicesList(scheme, name string) *ServicesList {
 	//log.Printf("Service List : CreateServicesList")
+	if scheme == "" {
+		scheme = "http"
+	}
 	return &ServicesList{it: -1, list: make([]*serviceInfo, 0, 0), mutexSL: &sync.Mutex{},
-		failedConnectionsLimit: 6, schema: schema, name: name}
+		failedConnectionsLimit: 6, scheme: scheme, name: name}
+}
+
+func (sl *ServicesList) Scheme() string {
+	return sl.scheme
 }
 
 func (sl *ServicesList) Name() string {
@@ -118,7 +125,7 @@ func (sl *ServicesList) updateFailedConnections(i, newValue int) {
 func (sl *ServicesList) CheckState() {
 	for i := 0; i < len(sl.list); i++ {
 		if sl.list[i].failedConnections <= sl.failedConnectionsLimit {
-			resp, err := http.Get(sl.schema + "://" + sl.list[i].address + "/status")
+			resp, err := http.Get(sl.scheme + "://" + sl.list[i].address + "/status")
 			if err != nil { // TODO
 				sl.updateFailedConnections(i, sl.list[i].failedConnections+1)
 			} else {

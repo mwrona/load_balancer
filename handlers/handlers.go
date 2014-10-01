@@ -7,38 +7,69 @@ import (
 	"scalarm_load_balancer/model"
 )
 
-func RegistrationHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+func RegistrationHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	address := r.FormValue("address")
+	service_name := r.FormValue("name")
 	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
 		log.Printf("RegistrationHandler: error, missing addres\n\n")
-	} else {
-		if err := servicesList.AddService(address); err == nil {
-			fmt.Fprintf(w, "Registered %s:  %s", servicesList.Name(), address)
-			log.Printf("RegistrationHandler: registered " + servicesList.Name() + ": " + address + "\n\n")
-		} else {
-			fmt.Fprintf(w, "Host already exists")
-			log.Printf("RegistrationHandler %s: %v \n\n", servicesList.Name(), err)
-		}
+		return
 	}
+	if service_name == "" {
+		fmt.Fprintf(w, "Error: missing service name")
+		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
+		return
+	}
+
+	sl, ok := servicesTypesList[service_name]
+	if ok == false {
+		fmt.Fprintf(w, "Service "+service_name+" does not exist")
+		log.Printf("RegistrationHandler: Service " + service_name + " does not exist")
+	}
+
+	if err := sl.AddService(address); err == nil {
+		fmt.Fprintf(w, "Registered %s:  %s", sl.Name(), address)
+		log.Printf("RegistrationHandler: registered " + sl.Name() + ": " + address + "\n\n")
+	} else {
+		fmt.Fprintf(w, "Host already exists")
+		log.Printf("RegistrationHandler %s: %v \n\n", sl.Name(), err)
+	}
+
 }
 
-func UnregistrationHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+/*
+func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	address := r.FormValue("address")
 	if address == "" {
 		fmt.Fprintf(w, "Error: missing address")
 		log.Printf("UnregistrationHandler: error, missing address\n\n")
+	} else if service_name == "" {
+		fmt.Fprintf(w, "Error: missing service name")
+		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
 	} else {
-		servicesList.UnregisterService(address)
-		fmt.Fprintf(w, "Unregistered %s:  %s", servicesList.Name(), address)
-		log.Printf("UnregistrationHandler: unregistered " + servicesList.Name() + ": " + address + "\n\n")
+		servicesTypesList.UnregisterService(address)
+		fmt.Fprintf(w, "Unregistered %s:  %s", servicesTypesList.Name(), address)
+		log.Printf("UnregistrationHandler: unregistered " + servicesTypesList.Name() + ": " + address + "\n\n")
 	}
 }
+*/
+func ListHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
+	service_name := r.FormValue("name")
+	if service_name == "" {
+		fmt.Fprintf(w, "Error: missing service name")
+		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
+		return
+	}
 
-func ListHandler(servicesList *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+	sl, ok := servicesTypesList[service_name]
+	if ok == false {
+		fmt.Fprintf(w, "Service "+service_name+" does not exist")
+		log.Printf("ListHandler: Service " + service_name + " does not exist")
+	}
+
 	log.Printf("ListHandler: printing services list\n\n")
-	fmt.Fprintln(w, "Available "+servicesList.Name()+":\n")
-	for _, val := range servicesList.GetServicesList() {
+	fmt.Fprintln(w, "Available "+sl.Name()+":\n")
+	for _, val := range sl.GetServicesList() {
 		fmt.Fprintln(w, val)
 	}
 }

@@ -12,13 +12,11 @@ type Config struct {
 	LocalLoadBalancerAddress  string
 	LoadBalancerScheme        string
 	InformationServiceAddress string
-	InformationServiceScheme  string
 	InformationServiceUser    string
 	InformationServicePass    string
-	LoadBalancerUser          string
-	LoadBalancerPass          string
 	CertFilePath              string
 	KeyFilePath               string
+	RedirectionConfig         []RedirectionPolicy
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -34,9 +32,6 @@ func LoadConfig(filename string) (*Config, error) {
 
 	if config.LoadBalancerScheme == "" {
 		config.LoadBalancerScheme = "https"
-	}
-	if config.InformationServiceScheme == "" {
-		config.InformationServiceScheme = "http"
 	}
 	if config.LocalLoadBalancerAddress == "" {
 		config.LocalLoadBalancerAddress = "localhost"

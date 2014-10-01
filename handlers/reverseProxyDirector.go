@@ -20,31 +20,29 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 
 		req.Header.Add("X-Forwarded-Proto", context.LoadBalancerScheme)
 
-		if splitted[1] == "information" {
-			req.URL.Scheme = context.InformationServiceScheme
-			req.URL.Host = context.InformationServiceAddress
-			req.URL.Path = "/" + splitted[2]
-		} else {
-			var servicesList *model.ServicesList
-			var path string
+		prefix := "/" + splitted[1]
+		sl, ok := context.RedirectionsList[prefix]
+		path := "/" + splitted[2]
 
-			if splitted[1] == "storage" {
-				servicesList = context.StorageManagersList
-				path = "/" + splitted[2]
-			} else {
-				servicesList = context.ExperimentManagersList
-				path = req.URL.Path
-			}
+		if ok == false {
+			sl, ok = context.RedirectionsList["/"]
+			path = req.URL.Path
+		}
 
-			if host, err := servicesList.GetNext(); err != nil {
-				req.URL.Scheme = context.LoadBalancerScheme
-				req.URL.Host = context.LoadBalancerAddress
-				req.URL.Path = "/error/"
-			} else {
-				req.URL.Scheme = "http"
+		if ok {
+			if host, err := sl.GetNext(); err == nil {
+				req.URL.Scheme = sl.Scheme()
 				req.URL.Host = host
 				req.URL.Path = path
+			} else {
+				ok = false
 			}
+		}
+
+		if !ok {
+			req.URL.Scheme = context.LoadBalancerScheme
+			req.URL.Host = context.LoadBalancerAddress
+			req.URL.Path = "/error/"
 		}
 
 		log.Printf("ReverseProxyDirector : redirect to %v\n\n", req.URL)
