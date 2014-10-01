@@ -6,17 +6,17 @@ import (
 )
 
 type Config struct {
-	RemoteLoadBalancerAddress string
-	Port                      string
-	MulticastAddress          string
-	LocalLoadBalancerAddress  string
-	LoadBalancerScheme        string
-	InformationServiceAddress string
-	InformationServiceUser    string
-	InformationServicePass    string
-	CertFilePath              string
-	KeyFilePath               string
-	RedirectionConfig         []RedirectionPolicy
+	PublicLoadBalancerAddress  string
+	Port                       string
+	MulticastAddress           string
+	PrivateLoadBalancerAddress string
+	LoadBalancerScheme         string
+	InformationServiceAddress  string
+	InformationServiceUser     string
+	InformationServicePass     string
+	CertFilePath               string
+	KeyFilePath                string
+	RedirectionConfig          []RedirectionPolicy
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -33,8 +33,8 @@ func LoadConfig(filename string) (*Config, error) {
 	if config.LoadBalancerScheme == "" {
 		config.LoadBalancerScheme = "https"
 	}
-	if config.LocalLoadBalancerAddress == "" {
-		config.LocalLoadBalancerAddress = "localhost"
+	if config.PrivateLoadBalancerAddress == "" {
+		config.PrivateLoadBalancerAddress = "localhost"
 	}
 
 	return config, nil

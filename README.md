@@ -4,6 +4,7 @@ Contents
 ---------- 
 * scalarm_load_balancer - main load balancer program  
 * config - example configuraton for load balancer 
+* scripts - scripts to start on stop load balancer (on linux)
 
 Installation guide: 
 ---------------------- 
@@ -43,8 +44,8 @@ The config consists of config.json, cert.pem and key.pem. The cert.pem and key.p
 Example of config.json:
 ````
 {
-	"LocalLoadBalancerAddress": "localhost",
-	"RemoteLoadBalancerAddress": "149.156.10.32:13585",
+	"PrivateLoadBalancerAddress": "localhost",
+	"PublicLoadBalancerAddress": "149.156.10.32:13585",
 	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
@@ -64,7 +65,7 @@ Example of config.json:
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
 Optional entries:
-* LocalLoadBalancerAddress - default: "localhost"
+* PrivateLoadBalancerAddress - default: "localhost"
 * LoadBalancerScheme - defaulf: "https"
 * CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
 * In RedirectionConfig: 

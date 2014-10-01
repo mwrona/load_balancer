@@ -60,7 +60,7 @@ func main() {
 	//setting context
 	context := &model.Context{
 		RedirectionsList:    redirectionsList,
-		LoadBalancerAddress: config.LocalLoadBalancerAddress,
+		LoadBalancerAddress: config.PrivateLoadBalancerAddress,
 		LoadBalancerScheme:  config.LoadBalancerScheme,
 	}
 
@@ -79,7 +79,7 @@ func main() {
 	//information service registration
 	if _, err := utils.RepetitiveCaller(
 		func() (interface{}, error) {
-			return nil, utils.InformationServiceRegistration(config.RemoteLoadBalancerAddress,
+			return nil, utils.InformationServiceRegistration(config.PublicLoadBalancerAddress,
 				config.InformationServiceAddress,
 				informationServiceScheme,
 				config.InformationServiceUser,
@@ -92,7 +92,7 @@ func main() {
 	}
 
 	//starting multicast sender
-	go services.StartMulticastAddressSender(config.LocalLoadBalancerAddress, config.MulticastAddress)
+	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
 
 	//setting up server
 	server := &http.Server{
@@ -109,7 +109,7 @@ func main() {
 					Addr: ":80",
 					Handler: http.HandlerFunc(
 						func(w http.ResponseWriter, req *http.Request) {
-							http.Redirect(w, req, "https://"+config.RemoteLoadBalancerAddress+req.RequestURI,
+							http.Redirect(w, req, "https://"+config.PublicLoadBalancerAddress+req.RequestURI,
 								http.StatusMovedPermanently)
 						}),
 				}
