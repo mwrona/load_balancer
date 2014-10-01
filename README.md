@@ -67,15 +67,15 @@ Description:
 * PublicLoadBalancerAddress - this address is registered in Information Service
 * Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
-* LoadBalancerScheme - optional, by defaulf: "https"; protocol on which load balancer works 
+* LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
 * InformationServiceAddress - address of Information Service
 * InformationServiceUser - login to Information Service
 * InformationServicePass - password to Information Service
-* CertFilePath, KeyFilePath - optional when LoadBalancerScheme is "http"; path co certificate files
+* CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files
 * RedirectionConfig - config of redirection policy: 
  * Path - path to service
  * Name - name of service type
- * DisableStatusChecking - optional, by default: false; disabling periadical status checking
+ * DisableStatusChecking - optional, by default: false; disabling periodical status checking
  * Scheme - optional, by default: "http"; service scheme
 
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
