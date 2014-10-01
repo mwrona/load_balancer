@@ -1,8 +1,7 @@
 package model
 
 type Context struct {
-	ExperimentManagersList    *ServicesList
-	StorageManagersList       *ServicesList
+	RedirectionsList          map[string]*ServicesList
 	InformationServiceAddress string
 	InformationServiceScheme  string
 	LoadBalancerAddress       string

@@ -1,15 +1,17 @@
 {
-	"LocalLoadBalancerAddress": "localhost:9000",
-	"RemoteLoadBalancerAddress": "localhost:9000",
-	"Port": "9000",
-	"MulticastAddress": "224.1.2.3:8000",
-	"LoadBalancerScheme": "http",
+	"PrivateLoadBalancerAddress": "localhost",
+	"PublicLoadBalancerAddress": "149.156.10.32:13585",
+	"Port": "443",
+	"MulticastAddress": "224.1.2.3:8000", 
+	"LoadBalancerScheme": "https",
 	"InformationServiceAddress": "localhost:11300",
-	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
-	"LoadBalancerUser" : "scalarm",
-	"LoadBalancerPass" : "scalarm",
 	"CertFilePath": "cert.pem",
-	"KeyFilePath": "key.pem"
+	"KeyFilePath": "key.pem",
+	"RedirectionConfig" : [
+		{"Path": "/", 			 "Name": "ExperimentManager"},
+		{"Path": "/storage", 	 "Name": "StorageManager"},
+		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true}
+	]
 }

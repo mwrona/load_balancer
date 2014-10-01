@@ -4,6 +4,7 @@ Contents
 ---------- 
 * scalarm_load_balancer - main load balancer program  
 * config - example configuraton for load balancer 
+* scripts - scripts to start on stop load balancer (on linux)
 
 Installation guide: 
 ---------------------- 
@@ -39,29 +40,39 @@ go install scalarm_load_balancer
 This command will install load balancer in $GOPATH/bin. It's name will be scalarm_load_balancer 
 Config 
 -------- 
-The config folder contains config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
+The config consists of config.json, cert.pem and key.pem. The cert.pem and key.pem files are needed for https server, config.json contains program configuration. 
 Example of config.json:
 ````
 {
-	"LocalLoadBalancerAddress": "localhost:9000",
-	"RemoteBalancerAddress": "localhost:9000",
-	"Port": "9000",
+	"PrivateLoadBalancerAddress": "localhost",
+	"PublicLoadBalancerAddress": "149.156.10.32:13585",
+	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
 	"InformationServiceAddress": "localhost:11300",
-	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
-	"LoadBalancerUser" : "scalarm",
-	"LoadBalancerPass" : "scalarm",
 	"CertFilePath": "cert.pem",
-	"KeyFilePath": "key.pem"
+	"KeyFilePath": "key.pem",
+	"RedirectionConfig" : [
+		{"Path": "/", 			 "Name": "ExperimentManager"},
+		{"Path": "/storage", 	 "Name": "StorageManager"},
+		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true, "Scheme": "http"}
+	]
 }
 
 ````
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
-If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries.
+Optional entries:
+* PrivateLoadBalancerAddress - default: "localhost"
+* LoadBalancerScheme - defaulf: "https"
+* CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
+* In RedirectionConfig: 
+ * DisableStatusChecking - default: false
+ * Scheme - default: "http"
+
+If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 
 Run 
 ---- 
@@ -71,12 +82,5 @@ scalarm_load_balancer config_folder/my_config.json
 ```
 API
 -----
-* / - redirection to Experimet Managers
-* /information - redirection to Information Services
-* /storage - redirection to Storage Managers
-* /experiment_managers - list of available Experiments Managers
-* /experiment_managers/register - POST with parameter address, registration of new Experiment Manager
-* /experiment_managers/unregister - POST with parameter address, unregistration of Experiment Manager
-* /storage_managers - list of available Storage Managers
-* /storage_managers/register - POST with parameter address, registration of new Storage Managers
-* /storage_managers/unregister - POST with parameter address, unregistration of Storage Managers
+* /list - with parameter 'name'
+* /register - POST with parameter 'address' and 'name'
