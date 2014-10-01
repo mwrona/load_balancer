@@ -69,8 +69,8 @@ Optional entries:
 * LoadBalancerScheme - defaulf: "https"
 * CertFilePath, KeyFilePath when LoadBalancerScheme is "http"
 * In RedirectionConfig: 
-** DisableStatusChecking - default: false
-** Scheme - default: "http"
+ * DisableStatusChecking - default: false
+ * Scheme - default: "http"
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 
