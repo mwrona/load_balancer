@@ -49,7 +49,6 @@ Example of config.json:
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
 	"InformationServiceAddress": "localhost:11300",
-	"InformationServiceScheme": "http",
 	"InformationServiceUser" : "scalarm",
 	"InformationServicePass" : "scalarm",
 	"CertFilePath": "cert.pem",
