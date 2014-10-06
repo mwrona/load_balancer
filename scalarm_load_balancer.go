@@ -36,18 +36,25 @@ func main() {
 	if t := os.Getenv("INFORMATION_SERVICE_PASSWORD"); t != "" {
 		config.InformationServicePass = t
 	}
+	//creating channel for requests about saving state
+	stateChan := make(chan byte, 15)
 
+	//creating services lists and names maps
 	redirectionsList := make(map[string]*model.ServicesList)
 	servicesTypesList := make(map[string]*model.ServicesList)
 	for _, rc := range config.RedirectionConfig {
-		nsl := model.NewServicesList(rc.Scheme, rc.Name)
+		nsl := model.NewServicesList(rc.Scheme, rc.Name, stateChan)
 		redirectionsList[rc.Path] = nsl
 		servicesTypesList[rc.Name] = nsl
 
+		// starting status checking deamons
 		if !rc.DisableStatusChecking {
 			go services.ServicesStatusChecker(redirectionsList[rc.Path])
 		}
 	}
+	//loading state if exeists
+	services.LoadState(servicesTypesList)
+
 	//adding information service data from config
 	var informationServiceScheme string
 	if is, ok := redirectionsList["/information"]; ok {
@@ -60,19 +67,20 @@ func main() {
 	//setting context
 	context := &model.Context{
 		RedirectionsList:    redirectionsList,
+		ServicesTypesList:   servicesTypesList,
 		LoadBalancerAddress: config.PrivateLoadBalancerAddress,
 		LoadBalancerScheme:  config.LoadBalancerScheme,
+		StateChan:           stateChan,
 	}
 
 	//setting reverse proxy
 	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context)}
 	http.Handle("/", reverseProxy)
 
-	http.Handle("/register", model.ServicesTypesListHandler(servicesTypesList,
-		handlers.RegistrationHandler))
+	http.Handle("/register", model.ContextHandler(context, handlers.RegistrationHandler))
 	//http.Handle("/unregister", model.ServicesListHandler(context.RedirectionsList,
 	//	handlers.UnregistrationHandler)))
-	http.Handle("/list", model.ServicesTypesListHandler(servicesTypesList, handlers.ListHandler))
+	http.Handle("/list", model.ContextHandler(context, handlers.ListHandler))
 
 	http.HandleFunc("/error/", handlers.ErrorHandler)
 
@@ -91,8 +99,9 @@ func main() {
 		log.Fatal("Registration to Information Service failed")
 	}
 
-	//starting multicast sender
+	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
+	go services.StateDeamon(context.StateChan, servicesTypesList)
 
 	//setting up server
 	server := &http.Server{
