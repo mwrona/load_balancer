@@ -9,7 +9,6 @@ import (
 	"scalarm_load_balancer/handlers"
 	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
-	"scalarm_load_balancer/utils"
 )
 
 func main() {
@@ -27,15 +26,6 @@ func main() {
 		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
 	}
 
-	if t := os.Getenv("INFORMATION_SERVICE_URL"); t != "" {
-		config.InformationServiceAddress = t
-	}
-	if t := os.Getenv("INFORMATION_SERVICE_LOGIN"); t != "" {
-		config.InformationServiceUser = t
-	}
-	if t := os.Getenv("INFORMATION_SERVICE_PASSWORD"); t != "" {
-		config.InformationServicePass = t
-	}
 	//creating channel for requests about saving state
 	stateChan := make(chan byte, 15)
 
@@ -54,15 +44,6 @@ func main() {
 	}
 	//loading state if exeists
 	services.LoadState(servicesTypesList)
-
-	//adding information service data from config
-	var informationServiceScheme string
-	if is, ok := redirectionsList["/information"]; ok {
-		is.AddService(config.InformationServiceAddress)
-		informationServiceScheme = is.Scheme()
-	} else {
-		log.Fatal("Information Service not specified")
-	}
 
 	//setting context
 	context := &model.Context{
@@ -83,21 +64,6 @@ func main() {
 	http.Handle("/list", model.ContextHandler(context, handlers.ListHandler))
 
 	http.HandleFunc("/error/", handlers.ErrorHandler)
-
-	//information service registration
-	if _, err := utils.RepetitiveCaller(
-		func() (interface{}, error) {
-			return nil, utils.InformationServiceRegistration(config.PublicLoadBalancerAddress,
-				config.InformationServiceAddress,
-				informationServiceScheme,
-				config.InformationServiceUser,
-				config.InformationServicePass)
-		},
-		nil,
-		"InformationServiseRegistration",
-	); err != nil {
-		log.Fatal("Registration to Information Service failed")
-	}
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)

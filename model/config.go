@@ -11,9 +11,6 @@ type Config struct {
 	MulticastAddress           string
 	PrivateLoadBalancerAddress string
 	LoadBalancerScheme         string
-	InformationServiceAddress  string
-	InformationServiceUser     string
-	InformationServicePass     string
 	CertFilePath               string
 	KeyFilePath                string
 	RedirectionConfig          []RedirectionPolicy

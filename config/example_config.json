@@ -4,9 +4,6 @@
 	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",
-	"InformationServiceAddress": "localhost:11300",
-	"InformationServiceUser" : "scalarm",
-	"InformationServicePass" : "scalarm",
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem",
 	"RedirectionConfig" : [

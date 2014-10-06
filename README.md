@@ -47,9 +47,6 @@ Example of config.json:
 	"PublicLoadBalancerAddress": "149.156.10.32:13585",
 	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
-	"InformationServiceAddress": "localhost:11300",
-	"InformationServiceUser" : "scalarm",
-	"InformationServicePass" : "scalarm",
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem",
 	"RedirectionConfig" : [
@@ -68,9 +65,6 @@ Description:
 * Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
 * LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
-* InformationServiceAddress - address of Information Service
-* InformationServiceUser - login to Information Service
-* InformationServicePass - password to Information Service
 * CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files
 * RedirectionConfig - config of redirection policy: 
  * Path - path to service

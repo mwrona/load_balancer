@@ -25,17 +25,18 @@ func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.
 	if ok == false {
 		fmt.Fprintf(w, "Service "+service_name+" does not exist")
 		log.Printf("RegistrationHandler: Service " + service_name + " does not exist")
+		return
 	}
 
 	if err := sl.AddService(address); err == nil {
 		fmt.Fprintf(w, "Registered %s:  %s", sl.Name(), address)
 		log.Printf("RegistrationHandler: registered " + sl.Name() + ": " + address + "\n\n")
+		context.StateChan <- 's'
 	} else {
 		fmt.Fprintf(w, "Host already exists")
 		log.Printf("RegistrationHandler %s: %v \n\n", sl.Name(), err)
 	}
 
-	context.StateChan <- 's'
 }
 
 /*
@@ -66,6 +67,7 @@ func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request)
 	if ok == false {
 		fmt.Fprintf(w, "Service "+service_name+" does not exist")
 		log.Printf("ListHandler: Service " + service_name + " does not exist")
+		return
 	}
 
 	log.Printf("ListHandler: printing services list\n\n")
