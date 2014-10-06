@@ -7,7 +7,7 @@ import (
 	"scalarm_load_balancer/model"
 )
 
-func RegistrationHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
+func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
 	address := r.FormValue("address")
 	service_name := r.FormValue("name")
 	if address == "" {
@@ -21,7 +21,7 @@ func RegistrationHandler(servicesTypesList map[string]*model.ServicesList, w htt
 		return
 	}
 
-	sl, ok := servicesTypesList[service_name]
+	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
 		fmt.Fprintf(w, "Service "+service_name+" does not exist")
 		log.Printf("RegistrationHandler: Service " + service_name + " does not exist")
@@ -35,6 +35,7 @@ func RegistrationHandler(servicesTypesList map[string]*model.ServicesList, w htt
 		log.Printf("RegistrationHandler %s: %v \n\n", sl.Name(), err)
 	}
 
+	context.StateChan <- 's'
 }
 
 /*
@@ -53,7 +54,7 @@ func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w h
 	}
 }
 */
-func ListHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
+func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
 	service_name := r.FormValue("name")
 	if service_name == "" {
 		fmt.Fprintf(w, "Error: missing service name")
@@ -61,7 +62,7 @@ func ListHandler(servicesTypesList map[string]*model.ServicesList, w http.Respon
 		return
 	}
 
-	sl, ok := servicesTypesList[service_name]
+	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
 		fmt.Fprintf(w, "Service "+service_name+" does not exist")
 		log.Printf("ListHandler: Service " + service_name + " does not exist")

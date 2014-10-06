@@ -20,15 +20,16 @@ type ServicesList struct {
 	failedConnectionsLimit int
 	scheme                 string
 	name                   string
+	stateChan              chan byte
 }
 
-func NewServicesList(scheme, name string) *ServicesList {
+func NewServicesList(scheme, name string, stateChan chan byte) *ServicesList {
 	//log.Printf("Service List : CreateServicesList")
 	if scheme == "" {
 		scheme = "http"
 	}
 	return &ServicesList{it: -1, list: make([]*serviceInfo, 0, 0), mutexSL: &sync.Mutex{},
-		failedConnectionsLimit: 6, scheme: scheme, name: name}
+		failedConnectionsLimit: 6, scheme: scheme, name: name, stateChan: stateChan}
 }
 
 func (sl *ServicesList) Scheme() string {
@@ -74,12 +75,18 @@ func (sl *ServicesList) UnregisterService(address string) {
 func (sl *ServicesList) removeService(i int) {
 	sl.mutexSL.Lock()
 	defer sl.mutexSL.Unlock()
-	sl.list = append(sl.list[:i], sl.list[i+1:]...)
+	copy(sl.list[i:], sl.list[i+1:])
+	sl.list[len(sl.list)-1] = nil
+	sl.list = sl.list[:len(sl.list)-1]
+
+	//sl.list = append(sl.list[:i], sl.list[i+1:]...)
 	//log.Printf("Service List : RemoveService: deleted " + sl.list[i].address + ":" + sl.list[i].port)
 
 	if sl.it >= i {
 		sl.it--
 	}
+
+	sl.stateChan <- 's'
 }
 
 func (sl *ServicesList) GetNext() (string, error) {
