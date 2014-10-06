@@ -34,7 +34,10 @@ func LoadConfig(filename string) (*Config, error) {
 		config.PrivateLoadBalancerAddress = "localhost"
 	}
 	if config.CertFilePath == "" {
-		config.CertFilePath = ""
+		config.CertFilePath = "cert.pem"
+	}
+	if config.KeyFilePath == "" {
+		config.KeyFilePath = "key.pem"
 	}
 
 	return config, nil

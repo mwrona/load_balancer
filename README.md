@@ -65,7 +65,7 @@ Description:
 * Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
 * LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
-* CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files
+* CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files, by default CertFilePath: "cert.pem"; KeyFilePath: "key.pem"
 * RedirectionConfig - config of redirection policy: 
  * Path - path to service
  * Name - name of service type
