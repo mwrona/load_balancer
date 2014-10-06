@@ -81,11 +81,41 @@ To properly work in https mode load balancer certificate must be known to all se
 Instruction to generate self-signed certificate(steps 1-4): http://www.akadia.com/services/ssh_test_certificate.html 
 
 Run 
----- 
+----
 To run load balancer you have to supply all necessary files (config.json and in the https mode cert.pem and key.pem). By default load balancer is looking for config.json in current directory but you can specify different location as program argument. Example:
 ```
 scalarm_load_balancer config_folder/my_config.json
 ```
+To run properly with Scalarm you need to run below script (scrpits/scalarm_registration) with appropriate config after first run. You have to run it only once.
+
+```
+#!/bin/bash
+#config
+INFORMATION_SERVICE_URL_="localhost:11300"
+INFORMATION_SERVICE_LOGIN_="scalarm"
+INFORMATION_SERVICE_PASSWORD_="scalarm"
+REMOTE_LOAD_BALANCER_ADDRESS="149.156.10.32:13585"
+LOCAL_LOAD_BALANCER_ADDRESS="localhost"
+#script
+if [ -z "$INFORMATION_SERVICE_URL" ]; then
+    INFORMATION_SERVICE_URL=$INFORMATION_SERVICE_URL_
+fi
+if [ -z "$INFORMATION_SERVICE_LOGIN" ]; then
+    INFORMATION_SERVICE_LOGIN=$INFORMATION_SERVICE_LOGIN_
+fi
+if [ -z "$INFORMATION_SERVICE_PASSWORD" ]; then
+    INFORMATION_SERVICE_PASSWORD=$INFORMATION_SERVICE_PASSWORD_
+fi  
+curl -u $INFORMATION_SERVICE_LOGIN:$INFORMATION_SERVICE_PASSWORD --data "address=$REMOTE_LOAD_BALANCER_ADDRESS" http://$INFORMATION_SERVICE_URL/experiment_managers
+echo
+curl -u $INFORMATION_SERVICE_LOGIN:$INFORMATION_SERVICE_PASSWORD --data "address=$REMOTE_LOAD_BALANCER_ADDRESS/storage" http://$INFORMATION_SERVICE_URL/storage_managers
+echo
+curl -k --data "address=$INFORMATION_SERVICE_URL&name=InformationService" https://$LOCAL_LOAD_BALANCER_ADDRESS/register
+echo
+
+```
+
+
 API
 -----
 * /list - with parameter 'name'
