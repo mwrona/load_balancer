@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -53,9 +54,14 @@ func main() {
 		LoadBalancerScheme:  config.LoadBalancerScheme,
 		StateChan:           stateChan,
 	}
+	//disabling certificate checking
+	TLSClientConfigCert := &tls.Config{InsecureSkipVerify: true}
+	TransportCert := &http.Transport{
+		TLSClientConfig: TLSClientConfigCert,
+	}
 
 	//setting reverse proxy
-	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context)}
+	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: TransportCert}
 	http.Handle("/", reverseProxy)
 
 	http.Handle("/register", model.ContextHandler(context, handlers.RegistrationHandler))
@@ -71,7 +77,8 @@ func main() {
 
 	//setting up server
 	server := &http.Server{
-		Addr: ":" + config.Port,
+		Addr:      ":" + config.Port,
+		TLSConfig: TLSClientConfigCert,
 	}
 
 	if config.LoadBalancerScheme == "http" {

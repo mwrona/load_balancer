@@ -33,6 +33,9 @@ func LoadConfig(filename string) (*Config, error) {
 	if config.PrivateLoadBalancerAddress == "" {
 		config.PrivateLoadBalancerAddress = "localhost"
 	}
+	if config.CertFilePath == "" {
+		config.CertFilePath = ""
+	}
 
 	return config, nil
 }
