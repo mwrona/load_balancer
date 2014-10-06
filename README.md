@@ -86,7 +86,7 @@ To run load balancer you have to supply all necessary files (config.json and in 
 ```
 scalarm_load_balancer config_folder/my_config.json
 ```
-To run properly with Scalarm you need to run below script (scrpits/scalarm_registration) with appropriate config after first run. You have to run it only once.
+To run properly with Scalarm you need to run below script (scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once.
 
 ```
 #!/bin/bash
