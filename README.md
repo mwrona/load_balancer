@@ -61,7 +61,7 @@ Example of config.json:
 
 Description:
 * PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast
-* PublicLoadBalancerAddress - this address is registered in Information Service
+* PublicLoadBalancerAddress - ~~this address is registered in Information Service~~ to remove, for now is needed
 * Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
 * LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
