@@ -76,9 +76,10 @@ Note: MulticastAddress must be the same as in experiment manager and other servi
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries. In this case config entries (InformationServiceAddress, InformationServiceUser, InformationServicePass) can be omitted.
 
-To properly work in https mode load balancer certificate must be known to all services. For development purpose you can generate self-signed certificate and install it in your system.
+-To properly work in https mode load balancer certificate must be known to all services. For development purpose you can generate self-signed certificate and install it in your system.-
 
-Instruction to generate self-signed certificate(steps 1-4): http://www.akadia.com/services/ssh_test_certificate.html 
+-Instruction to generate self-signed certificate(steps 1-4): http://www.akadia.com/services/ssh_test_certificate.html-
+For now certificates checking is disable.
 
 Run 
 ----
@@ -86,7 +87,7 @@ To run load balancer you have to supply all necessary files (config.json and in 
 ```
 scalarm_load_balancer config_folder/my_config.json
 ```
-To run properly with Scalarm you need to run below written script (also in scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once.
+To run properly with Scalarm you need to run below written script (scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once.
 
 ```
 #!/bin/bash
