@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -96,7 +95,7 @@ func (sl *ServicesList) GetNext() (string, error) {
 
 	if len(sl.list) == 0 {
 		//log.Printf("Service List : GetNext: service list is empty")
-		return "", errors.New("ServicesList : GetNext: services list is empty")
+		return "", fmt.Errorf("Services list is empty")
 	}
 
 	lenght := len(sl.list)
@@ -107,7 +106,7 @@ func (sl *ServicesList) GetNext() (string, error) {
 		lenght--
 		if lenght == 0 {
 			//log.Print("Service List : GetNext: all services are not responding")
-			return "", errors.New("ServicesList : GetNext: all services are not responding")
+			return "", fmt.Errorf("All services are not responding")
 		}
 	}
 
