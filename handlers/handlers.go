@@ -8,22 +8,27 @@ import (
 )
 
 func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
+	if r.Host != "localhost" && r.Host != context.LoadBalancerAddress {
+		http.Error(w, "Registration from remote client is forbidden", 403)
+		return
+	}
+
 	address := r.FormValue("address")
 	service_name := r.FormValue("name")
 	if address == "" {
-		fmt.Fprintf(w, "Error: missing address")
+		http.Error(w, "Error: missing address", 422)
 		log.Printf("RegistrationHandler: error, missing addres\n\n")
 		return
 	}
 	if service_name == "" {
-		fmt.Fprintf(w, "Error: missing service name")
+		http.Error(w, "Error: missing service name", 422)
 		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
 		return
 	}
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		fmt.Fprintf(w, "Service "+service_name+" does not exist")
+		http.Error(w, "Service "+service_name+" does not exist", 422)
 		log.Printf("RegistrationHandler: Service " + service_name + " does not exist")
 		return
 	}
@@ -58,14 +63,14 @@ func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w h
 func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		fmt.Fprintf(w, "Error: missing service name")
+		http.Error(w, "Error: missing service name", 422)
 		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
 		return
 	}
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		fmt.Fprintf(w, "Service "+service_name+" does not exist")
+		http.Error(w, "Service "+service_name+" does not exist", 422)
 		log.Printf("ListHandler: Service " + service_name + " does not exist")
 		return
 	}
@@ -78,5 +83,5 @@ func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request)
 }
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Service list is empty or all services are not responding. Please try again later.")
+	http.Error(w, "Service list is empty or all services are not responding. Please try again later.", 404)
 }
