@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,7 +49,7 @@ func (sl *ServicesList) AddService(address string) error {
 		if service.address == address {
 			//log.Printf("Service List : AddService: host already exists")
 			service.failedConnections = 0
-			return errors.New("ServicesList : AddService: host already exists")
+			return fmt.Errorf("Host %s already exists", address)
 		}
 	}
 

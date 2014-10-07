@@ -7,41 +7,37 @@ import (
 	"scalarm_load_balancer/model"
 )
 
-func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
+func messageWriter(who, query, message string, w http.ResponseWriter) {
+	log.Printf("%s: \nQuery: %s\nResponse: %s\n\n", who, query, message)
+	fmt.Fprintf(w, message)
+}
+
+func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.Request) error {
 	if r.Host != "localhost" && r.Host != context.LoadBalancerAddress {
-		http.Error(w, "Registration from remote client is forbidden", 403)
-		return
+		return model.NewHTTPError("RegistrationHandler", r.URL.String(), "Registration from remote client is forbidden", 403)
 	}
 
 	address := r.FormValue("address")
 	service_name := r.FormValue("name")
 	if address == "" {
-		http.Error(w, "Error: missing address", 422)
-		log.Printf("RegistrationHandler: error, missing addres\n\n")
-		return
+		return model.NewHTTPError("RegistrationHandler", r.URL.String(), "Missing address", 422)
 	}
 	if service_name == "" {
-		http.Error(w, "Error: missing service name", 422)
-		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
-		return
+		return model.NewHTTPError("RegistrationHandler", r.URL.String(), "Missing service name", 422)
 	}
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		http.Error(w, "Service "+service_name+" does not exist", 422)
-		log.Printf("RegistrationHandler: Service " + service_name + " does not exist")
-		return
+		return model.NewHTTPError("RegistrationHandler", r.URL.String(), "Service "+service_name+" does not exist", 422)
 	}
 
 	if err := sl.AddService(address); err == nil {
-		fmt.Fprintf(w, "Registered %s:  %s", sl.Name(), address)
-		log.Printf("RegistrationHandler: registered " + sl.Name() + ": " + address + "\n\n")
+		messageWriter("RegistrationHandler", r.URL.String(), "Registered new "+sl.Name()+": "+address, w)
 		context.StateChan <- 's'
 	} else {
-		fmt.Fprintf(w, "Host already exists")
-		log.Printf("RegistrationHandler %s: %v \n\n", sl.Name(), err)
+		messageWriter("RegistrationHandler", r.URL.String(), err.Error(), w)
 	}
-
+	return nil
 }
 
 /*
@@ -60,26 +56,25 @@ func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w h
 	}
 }
 */
-func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) {
+func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		http.Error(w, "Error: missing service name", 422)
-		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
-		return
+		return model.NewHTTPError("ListHandler", r.URL.String(), "Missing service name", 422)
 	}
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		http.Error(w, "Service "+service_name+" does not exist", 422)
-		log.Printf("ListHandler: Service " + service_name + " does not exist")
-		return
+		return model.NewHTTPError("ListHandler", r.URL.String(), "Service "+service_name+" does not exist", 422)
 	}
 
-	log.Printf("ListHandler: printing services list\n\n")
+	log.Printf("ListHandler:\nQuery %s\nMessage: %s list\n\n", sl.Name(), r.URL.String())
+
 	fmt.Fprintln(w, "Available "+sl.Name()+":\n")
 	for _, val := range sl.GetServicesList() {
 		fmt.Fprintln(w, val)
 	}
+
+	return nil
 }
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request) {

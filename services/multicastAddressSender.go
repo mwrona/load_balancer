@@ -26,7 +26,7 @@ func StartMulticastAddressSender(loadBalancerAddress, multicastAddress string) {
 		}
 
 		err := <-c
-		log.Printf("MulticastAddressSender: an error occured:\n" + err.Error() + "\nTry to restart")
+		log.Printf("MulticastAddressSender: an error occured:\n" + err.Error() + "\nTrying to restart")
 	}
 }
 
