@@ -39,6 +39,9 @@ func LoadConfig(filename string) (*Config, error) {
 	if config.LoadBalancerScheme == "" {
 		config.LoadBalancerScheme = "https"
 	}
+	if config.LoadBalancerScheme != "https" && config.LoadBalancerScheme != "http" {
+		return nil, fmt.Errorf("Unsuported protocol in LoadBalancerScheme")
+	}
 	if config.CertFilePath == "" {
 		config.CertFilePath = "cert.pem"
 	}
@@ -46,7 +49,7 @@ func LoadConfig(filename string) (*Config, error) {
 		config.KeyFilePath = "key.pem"
 	}
 	if config.RedirectionConfig == nil {
-		return nil, fmt.Errorf("Redirection Config is missing")
+		return nil, fmt.Errorf("RedirectionConfig is missing")
 	}
 
 	return config, nil
