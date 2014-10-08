@@ -90,8 +90,8 @@ func main() {
 				serverHTTP := &http.Server{
 					Addr: ":80",
 					Handler: http.HandlerFunc(
-						func(w http.ResponseWriter, req *http.Request) {
-							http.Redirect(w, req, "https://"+config.PublicLoadBalancerAddress+req.RequestURI,
+						func(w http.ResponseWriter, r *http.Request) {
+							http.Redirect(w, r, "https://"+r.Host+r.RequestURI,
 								http.StatusMovedPermanently)
 						}),
 				}

@@ -2,11 +2,11 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
 type Config struct {
-	PublicLoadBalancerAddress  string
 	Port                       string
 	MulticastAddress           string
 	PrivateLoadBalancerAddress string
@@ -27,17 +27,26 @@ func LoadConfig(filename string) (*Config, error) {
 		return nil, err
 	}
 
-	if config.LoadBalancerScheme == "" {
-		config.LoadBalancerScheme = "https"
+	if config.Port == "" {
+		config.Port = "443"
+	}
+	if config.MulticastAddress == "" {
+		return nil, fmt.Errorf("Multicast address is missing")
 	}
 	if config.PrivateLoadBalancerAddress == "" {
 		config.PrivateLoadBalancerAddress = "localhost"
+	}
+	if config.LoadBalancerScheme == "" {
+		config.LoadBalancerScheme = "https"
 	}
 	if config.CertFilePath == "" {
 		config.CertFilePath = "cert.pem"
 	}
 	if config.KeyFilePath == "" {
 		config.KeyFilePath = "key.pem"
+	}
+	if config.RedirectionConfig == nil {
+		return nil, fmt.Errorf("Redirection Config is missing")
 	}
 
 	return config, nil

@@ -1,6 +1,5 @@
 {
 	"PrivateLoadBalancerAddress": "localhost",
-	"PublicLoadBalancerAddress": "149.156.10.32:13585",
 	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"LoadBalancerScheme": "https",

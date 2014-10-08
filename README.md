@@ -44,8 +44,6 @@ The config consists of config.json, cert.pem and key.pem. The cert.pem and key.p
 Example of config.json:
 ````
 {
-	"PublicLoadBalancerAddress": "149.156.10.32:13585",
-	"Port": "443",
 	"MulticastAddress": "224.1.2.3:8000", 
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem",
@@ -60,10 +58,9 @@ Example of config.json:
 
 
 Description:
-* PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast, registration to load balancer is possible only from this address and from localhost
-* PublicLoadBalancerAddress - ~~this address is registered in Information Service~~ to remove, for now is needed
-* Port - the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
+* Port - optional, by default 443; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
+* PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast, registration to load balancer is possible only from this address and from localhost
 * LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
 * CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files, by default CertFilePath: "cert.pem"; KeyFilePath: "key.pem"
 * RedirectionConfig - config of redirection policy: 
