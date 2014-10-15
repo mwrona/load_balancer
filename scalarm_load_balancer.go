@@ -90,7 +90,7 @@ func main() {
 
 	http.Handle("/list", handler.Context(context, handler.List))
 
-	http.HandleFunc("/error/", handler.RedirectionError)
+	http.HandleFunc("/error", handler.RedirectionError)
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)

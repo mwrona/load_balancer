@@ -18,7 +18,7 @@ func redirectToError(context *model.Context, req *http.Request, err error) {
 	req.URL.RawQuery = values.Encode()
 	req.URL.Scheme = context.LoadBalancerScheme
 	req.URL.Host = req.Host
-	req.URL.Path = "/error/"
+	req.URL.Path = "/error"
 }
 
 func parseURL(context *model.Context, req *http.Request) (string, *model.ServicesList) {
@@ -61,7 +61,6 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 		req.URL.Host = host
 		req.URL.Path = path
 
-		fmt.Println()
 		log.Printf("%v \nredirect to %v\n\n", oldURL, req.URL)
 	}
 }
