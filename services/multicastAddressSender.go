@@ -20,13 +20,13 @@ func StartMulticastAddressSender(loadBalancerAddress, multicastAddress string) {
 				return nil, err
 			},
 			[]int{5, 5, 10, 10, 30},
-			"multicastAddressSender",
+			"MulticastAddressSender",
 		); err != nil {
 			log.Fatal("Unable to send address via multicast, stopping load balancer")
 		}
 
 		err := <-c
-		log.Printf("MulticastAddressSender: an error occured:\n" + err.Error() + "\nTrying to restart")
+		log.Printf("MulticastAddressSender: an error occured:\n%s\nTrying to restart", err.Error())
 	}
 }
 
@@ -36,7 +36,6 @@ func multicastAddressSender(loadBalancerAddress, multicastAddress string, out ch
 		out <- err
 		return
 	}
-
 	// conn, err := net.ListenMulticastUDP("udp", nil, mcaddr)
 	// utils.Check(err)
 

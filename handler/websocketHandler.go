@@ -22,7 +22,7 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 			return nil
 		}
 		director(req)
-		if req.URL.Host == "/error/" {
+		if req.URL.Host == "/error" {
 			RedirectionError(w, req)
 			return nil
 		}

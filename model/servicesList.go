@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"sync"
 )
 
@@ -146,15 +145,14 @@ func (sl *ServicesList) CheckState() {
 		}
 
 		if sl.list[i].failedConnections > sl.failedConnectionsLimit {
-			log.Printf(sl.name + " status check: removed " + sl.list[i].address + "\n\n")
+			log.Printf("%s: removed %s\n\n", sl.name, sl.list[i].address)
 			sl.removeService(i)
 			i--
 			continue
 		}
 
 		if sl.list[i].failedConnections != 0 {
-			log.Printf(sl.name + " status check: " + sl.list[i].address + " failed " +
-				strconv.Itoa(sl.list[i].failedConnections) + " times\n\n")
+			log.Printf("%s status check: %s failed %v times\n\n", sl.name, sl.list[i].address, sl.list[i].failedConnections)
 		}
 	}
 }

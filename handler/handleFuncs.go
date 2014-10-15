@@ -25,7 +25,7 @@ func ServicesManagment(f func(string, *model.ServicesList, http.ResponseWriter, 
 
 		sl, ok := context.ServicesTypesList[service_name]
 		if ok == false {
-			return model.NewHTTPError("Service "+service_name+" does not exist", 412)
+			return model.NewHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 		}
 		f(address, sl, w, r)
 		return nil
@@ -34,7 +34,7 @@ func ServicesManagment(f func(string, *model.ServicesList, http.ResponseWriter, 
 
 func Registration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	if err := sl.AddService(address); err == nil {
-		messageWriter(r.URL.String(), "Registered new "+sl.Name()+": "+address, w)
+		messageWriter(r.URL.String(), fmt.Sprintf("Registered new %s: %s", sl.Name(), address), w)
 	} else {
 		messageWriter(r.URL.String(), err.Error(), w)
 	}
@@ -42,13 +42,13 @@ func Registration(address string, sl *model.ServicesList, w http.ResponseWriter,
 
 func Unregistration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	sl.UnregisterService(address)
-	messageWriter(r.URL.String(), "Unegistered "+sl.Name()+": "+address, w)
+	messageWriter(r.URL.String(), fmt.Sprintf("Unregistered new %s: %s", sl.Name(), address), w)
 }
 
 func printServicesList(sl *model.ServicesList, w http.ResponseWriter) {
-	fmt.Fprintln(w, sl.Name()+":\n")
+	fmt.Fprintf(w, "%s:\n", sl.Name())
 	for _, val := range sl.GetServicesList() {
-		fmt.Fprintln(w, "\t", val)
+		fmt.Fprintf(w, "\t%v\n", val)
 	}
 }
 
@@ -69,7 +69,7 @@ func List(context *model.Context, w http.ResponseWriter, r *http.Request) error 
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		return model.NewHTTPError("Service "+service_name+" does not exist", 412)
+		return model.NewHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 	}
 	log.Printf("%s\nMessage: %s list\n\n", r.URL.String(), sl.Name())
 

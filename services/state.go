@@ -35,12 +35,12 @@ func saveState(services map[string]*model.ServicesList) {
 	}
 	data, err := json.Marshal(statesList)
 	if err != nil {
-		log.Printf("An error occurred while saving state: " + err.Error())
+		log.Printf("An error occurred while saving state: %s", err.Error())
 		return
 	}
 	err = ioutil.WriteFile("state.json", data, 0644)
 	if err != nil {
-		log.Printf("An error occurred while saving state: " + err.Error())
+		log.Printf("An error occurred while saving state: %s", err.Error())
 		return
 	}
 	log.Println("State saved succesfully")
@@ -49,13 +49,13 @@ func saveState(services map[string]*model.ServicesList) {
 func LoadState(services map[string]*model.ServicesList) {
 	data, err := ioutil.ReadFile("state.json")
 	if err != nil {
-		log.Printf("An error occurred while loading state: " + err.Error())
+		log.Printf("An error occurred while loading state: %s", err.Error())
 		return
 	}
 	var statesList []State
 	err = json.Unmarshal(data, &statesList)
 	if err != nil {
-		log.Printf("An error occurred while loading state: " + err.Error())
+		log.Printf("An error occurred while loading state: %s", err.Error())
 		return
 	}
 	for _, state := range statesList {
