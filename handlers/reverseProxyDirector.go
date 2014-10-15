@@ -8,43 +8,54 @@ import (
 	"strings"
 )
 
+func redirectToError(context *model.Context, req *http.Request) {
+	log.Printf("ReverseProxyDirector query: %v\nUnable to redirect", req.URL.RequestURI())
+	req.URL.Scheme = context.LoadBalancerScheme
+	req.URL.Host = req.Host
+	req.URL.Path = "/error/"
+}
+
+func parseURL(context *model.Context, req *http.Request) (string, *model.ServicesList) {
+	splitted := strings.SplitN(req.URL.Path, "/", 3)
+	if len(splitted) < 3 {
+		splitted = append(splitted, "")
+	}
+
+	prefix := "/" + splitted[1]
+	sl := context.RedirectionsList[prefix]
+	path := "/" + splitted[2]
+
+	if sl == nil {
+		sl = context.RedirectionsList["/"]
+		path = req.URL.Path
+	}
+
+	return path, sl
+}
+
 func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 	return func(req *http.Request) {
-		fmt.Println()
-		log.Printf("ReverseProxyDirector : query: %v", req.URL.RequestURI())
-
-		splitted := strings.SplitN(req.URL.Path, "/", 3)
-		if len(splitted) < 3 {
-			splitted = append(splitted, "")
-		}
+		oldURL := req.URL.RequestURI()
 
 		req.Header.Add("X-Forwarded-Proto", context.LoadBalancerScheme)
 
-		prefix := "/" + splitted[1]
-		sl, ok := context.RedirectionsList[prefix]
-		path := "/" + splitted[2]
-
-		if ok == false {
-			sl, ok = context.RedirectionsList["/"]
-			path = req.URL.Path
+		path, servicesList := parseURL(context, req)
+		if servicesList == nil {
+			redirectToError(context, req)
+			return
 		}
 
-		if ok {
-			if host, err := sl.GetNext(); err == nil {
-				req.URL.Scheme = sl.Scheme()
-				req.URL.Host = host
-				req.URL.Path = path
-			} else {
-				ok = false
-			}
+		host, err := servicesList.GetNext()
+		if err != nil {
+			redirectToError(context, req)
+			return
 		}
 
-		if !ok {
-			req.URL.Scheme = context.LoadBalancerScheme
-			req.URL.Host = context.LoadBalancerAddress
-			req.URL.Path = "/error/"
-		}
+		req.URL.Scheme = servicesList.Scheme()
+		req.URL.Host = host
+		req.URL.Path = path
 
-		log.Printf("ReverseProxyDirector : redirect to %v\n\n", req.URL)
+		fmt.Println()
+		log.Printf("ReverseProxyDirector query: %v \nredirect to %v\n\n", oldURL, req.URL)
 	}
 }
