@@ -19,7 +19,7 @@ func main() {
 
 	log.SetOutput(&lumberjack.Logger{
 		Dir:        "log",
-		MaxSize:    100 * lumberjack.Megabyte
+		MaxSize:    100 * lumberjack.Megabyte,
 		MaxBackups: 3,
 		MaxAge:     28, //days
 	})

@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"scalarm_load_balancer/model"
 	"strings"
 )
 
-func redirectToError(context *model.Context, req *http.Request) {
-	log.Printf("%v\nUnable to redirect", req.URL.RequestURI())
+func redirectToError(context *model.Context, req *http.Request, err error) {
+	log.Printf("%v\nUnable to redirect: %v", req.URL.RequestURI(), err.Error())
+
+	values := url.Values{}
+	values.Add("message", err.Error())
+
+	req.URL.RawQuery = values.Encode()
 	req.URL.Scheme = context.LoadBalancerScheme
 	req.URL.Host = req.Host
 	req.URL.Path = "/error/"
@@ -41,13 +47,13 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 
 		path, servicesList := parseURL(context, req)
 		if servicesList == nil {
-			redirectToError(context, req)
+			redirectToError(context, req, fmt.Errorf("Requested redirection does not exists"))
 			return
 		}
 
 		host, err := servicesList.GetNext()
 		if err != nil {
-			redirectToError(context, req)
+			redirectToError(context, req, err)
 			return
 		}
 
