@@ -42,7 +42,7 @@ func Registration(address string, sl *model.ServicesList, w http.ResponseWriter,
 
 func Unregistration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	sl.UnregisterService(address)
-	messageWriter(r.URL.String(), fmt.Sprintf("Unregistered new %s: %s", sl.Name(), address), w)
+	messageWriter(r.URL.String(), fmt.Sprintf("Unregistered %s: %s", sl.Name(), address), w)
 }
 
 func printServicesList(sl *model.ServicesList, w http.ResponseWriter) {
