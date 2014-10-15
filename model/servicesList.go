@@ -20,15 +20,26 @@ type ServicesList struct {
 	failedConnectionsLimit int
 	scheme                 string
 	name                   string
+	statusPath             string
 	stateChan              chan byte
 }
 
-func NewServicesList(scheme, name string, stateChan chan byte) *ServicesList {
-	if scheme == "" {
-		scheme = "http"
+func NewServicesList(rc RedirectionPolicy, stateChan chan byte) *ServicesList {
+	if rc.Scheme == "" {
+		rc.Scheme = "http"
 	}
-	return &ServicesList{it: -1, list: make([]*serviceInfo, 0, 0), mutexSL: &sync.Mutex{},
-		failedConnectionsLimit: 5, scheme: scheme, name: name, stateChan: stateChan}
+	if rc.StatusPath == "" {
+		rc.StatusPath = "/status"
+	}
+	return &ServicesList{
+		it:                     -1,
+		list:                   make([]*serviceInfo, 0, 0),
+		mutexSL:                &sync.Mutex{},
+		failedConnectionsLimit: 5,
+		scheme:                 rc.Scheme,
+		name:                   rc.Name,
+		statusPath:             rc.StatusPath,
+		stateChan:              stateChan}
 }
 
 func (sl *ServicesList) Scheme() string {
@@ -53,6 +64,7 @@ func (sl *ServicesList) AddService(address string) error {
 	serviceInfo := &serviceInfo{address: address}
 
 	sl.list = append(sl.list, serviceInfo)
+	//sl.stateChan <- 's'
 	return nil
 }
 
@@ -122,7 +134,8 @@ func (sl *ServicesList) updateFailedConnections(i, newValue int) {
 func (sl *ServicesList) CheckState() {
 	for i := 0; i < len(sl.list); i++ {
 		if sl.list[i].failedConnections <= sl.failedConnectionsLimit {
-			resp, err := http.Get(sl.scheme + "://" + sl.list[i].address + "/status")
+			resp, err := http.Get(sl.scheme + "://" + sl.list[i].address + sl.statusPath)
+
 			if err != nil || resp.StatusCode != 200 { // TODO
 				sl.updateFailedConnections(i, sl.list[i].failedConnections+1)
 			} else {
@@ -132,14 +145,14 @@ func (sl *ServicesList) CheckState() {
 		}
 
 		if sl.list[i].failedConnections > sl.failedConnectionsLimit {
-			log.Printf(sl.name + " state check: removed " + sl.list[i].address + "\n\n")
+			log.Printf(sl.name + " status check: removed " + sl.list[i].address + "\n\n")
 			sl.removeService(i)
 			i--
 			continue
 		}
 
 		if sl.list[i].failedConnections != 0 {
-			log.Printf(sl.name + " state check: " + sl.list[i].address + " failed " +
+			log.Printf(sl.name + " status check: " + sl.list[i].address + " failed " +
 				strconv.Itoa(sl.list[i].failedConnections) + " times\n\n")
 		}
 	}

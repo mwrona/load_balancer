@@ -43,7 +43,7 @@ func main() {
 	redirectionsList := make(map[string]*model.ServicesList)
 	servicesTypesList := make(map[string]*model.ServicesList)
 	for _, rc := range config.RedirectionConfig {
-		nsl := model.NewServicesList(rc.Scheme, rc.Name, stateChan)
+		nsl := model.NewServicesList(rc, stateChan)
 		redirectionsList[rc.Path] = nsl
 		servicesTypesList[rc.Name] = nsl
 
@@ -52,16 +52,14 @@ func main() {
 			go services.ServicesStatusChecker(redirectionsList[rc.Path])
 		}
 	}
-	//loading state if exeists
+	//loading state if exists
 	services.LoadState(servicesTypesList)
 
 	//setting context
 	context := &model.Context{
-		RedirectionsList:    redirectionsList,
-		ServicesTypesList:   servicesTypesList,
-		LoadBalancerAddress: config.PrivateLoadBalancerAddress,
-		LoadBalancerScheme:  config.LoadBalancerScheme,
-		StateChan:           stateChan,
+		RedirectionsList:   redirectionsList,
+		ServicesTypesList:  servicesTypesList,
+		LoadBalancerScheme: config.LoadBalancerScheme,
 	}
 	//disabling certificate checking
 	TLSClientConfigCert := &tls.Config{InsecureSkipVerify: true}
@@ -74,16 +72,25 @@ func main() {
 	reverseProxy := &httputil.ReverseProxy{Director: director, Transport: TransportCert}
 	http.Handle("/", handler.Context(nil, handler.Websocket(director, reverseProxy)))
 
-	http.Handle("/register", handler.Authentication(config.PrivateLoadBalancerAddress, handler.Context(context, handler.Registration)))
-	//http.Handle("/unregister", model.ServicesListHandler(context.RedirectionsList,
-	//	handlers.UnregistrationHandler)))
+	http.Handle("/register", handler.Authentication(
+		config.PrivateLoadBalancerAddress,
+		handler.Context(
+			context,
+			handler.ServicesManagment(handler.Registration))))
+
+	http.Handle("/unregister", handler.Authentication(
+		config.PrivateLoadBalancerAddress,
+		handler.Context(
+			context,
+			handler.ServicesManagment(handler.Unregistration))))
+
 	http.Handle("/list", handler.Context(context, handler.List))
 
 	http.HandleFunc("/error/", handler.RedirectionError)
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
-	go services.StateDeamon(context.StateChan, servicesTypesList)
+	go services.StateDeamon(stateChan, servicesTypesList)
 
 	//setting up server
 	server := &http.Server{

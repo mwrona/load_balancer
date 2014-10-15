@@ -48,7 +48,7 @@ Example of config.json:
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem",
 	"RedirectionConfig" : [
-		{"Path": "/", 			 "Name": "ExperimentManager"},
+		{"Path": "/", 			 "Name": "ExperimentManager", "StatusPath": "/status"},
 		{"Path": "/storage", 	 "Name": "StorageManager"},
 		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true, "Scheme": "http"}
 	]
@@ -68,6 +68,7 @@ Description:
  * Name - name of service type
  * DisableStatusChecking - optional, by default: false; disabling periodical status checking
  * Scheme - optional, by default: "http"; service scheme
+ * StatusPath - optional, by default "/status"; path to status check
 
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
@@ -119,3 +120,4 @@ API
 -----
 * /list - with parameter 'name'
 * /register - POST with parameter 'address' and 'name'
+* /unregister - POST with parameter 'address' and 'name'

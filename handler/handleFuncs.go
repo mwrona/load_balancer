@@ -12,46 +12,39 @@ func messageWriter(query, message string, w http.ResponseWriter) {
 	fmt.Fprintf(w, message)
 }
 
-func Registration(context *model.Context, w http.ResponseWriter, r *http.Request) error {
-	address := r.FormValue("address")
-	service_name := r.FormValue("name")
-	if address == "" {
-		return model.NewHTTPError("Missing address", 412)
-	}
-	if service_name == "" {
-		return model.NewHTTPError("Missing service name", 412)
-	}
+func ServicesManagment(f func(string, *model.ServicesList, http.ResponseWriter, *http.Request)) contextHandlerFunction {
+	return func(context *model.Context, w http.ResponseWriter, r *http.Request) error {
+		address := r.FormValue("address")
+		service_name := r.FormValue("name")
+		if address == "" {
+			return model.NewHTTPError("Missing address", 412)
+		}
+		if service_name == "" {
+			return model.NewHTTPError("Missing service name", 412)
+		}
 
-	sl, ok := context.ServicesTypesList[service_name]
-	if ok == false {
-		return model.NewHTTPError("Service "+service_name+" does not exist", 412)
+		sl, ok := context.ServicesTypesList[service_name]
+		if ok == false {
+			return model.NewHTTPError("Service "+service_name+" does not exist", 412)
+		}
+		f(address, sl, w, r)
+		return nil
 	}
+}
 
+func Registration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
 	if err := sl.AddService(address); err == nil {
 		messageWriter(r.URL.String(), "Registered new "+sl.Name()+": "+address, w)
-		context.StateChan <- 's'
 	} else {
 		messageWriter(r.URL.String(), err.Error(), w)
 	}
-	return nil
 }
 
-/*
-func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w http.ResponseWriter, r *http.Request) {
-	address := r.FormValue("address")
-	if address == "" {
-		fmt.Fprintf(w, "Error: missing address")
-		log.Printf("UnregistrationHandler: error, missing address\n\n")
-	} else if service_name == "" {
-		fmt.Fprintf(w, "Error: missing service name")
-		log.Printf("RegistrationHandler: error, missing missing service name\n\n")
-	} else {
-		servicesTypesList.UnregisterService(address)
-		fmt.Fprintf(w, "Unregistered %s:  %s", servicesTypesList.Name(), address)
-		log.Printf("UnregistrationHandler: unregistered " + servicesTypesList.Name() + ": " + address + "\n\n")
-	}
+func Unregistration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+	sl.UnregisterService(address)
+	messageWriter(r.URL.String(), "Unegistered "+sl.Name()+": "+address, w)
 }
-*/
+
 func printServicesList(sl *model.ServicesList, w http.ResponseWriter) {
 	fmt.Fprintln(w, sl.Name()+":\n")
 	for _, val := range sl.GetServicesList() {

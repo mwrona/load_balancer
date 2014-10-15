@@ -5,4 +5,5 @@ type RedirectionPolicy struct {
 	Name                  string
 	DisableStatusChecking bool
 	Scheme                string
+	StatusPath            string
 }
