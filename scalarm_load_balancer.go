@@ -61,15 +61,16 @@ func main() {
 	}
 
 	//setting reverse proxy
-	reverseProxy := &httputil.ReverseProxy{Director: handler.ReverseProxyDirector(context), Transport: TransportCert}
-	http.Handle("/", reverseProxy)
+	director := handler.ReverseProxyDirector(context)
+	reverseProxy := &httputil.ReverseProxy{Director: director, Transport: TransportCert}
+	http.Handle("/", handler.Context(nil, handler.Websocket(director, reverseProxy)))
 
 	http.Handle("/register", handler.Authentication(config.PrivateLoadBalancerAddress, handler.Context(context, handler.Registration)))
 	//http.Handle("/unregister", model.ServicesListHandler(context.RedirectionsList,
 	//	handlers.UnregistrationHandler)))
 	http.Handle("/list", handler.Context(context, handler.List))
 
-	http.HandleFunc("/error/", handler.Error)
+	http.HandleFunc("/error/", handler.RedirectionError)
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)

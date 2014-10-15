@@ -9,7 +9,7 @@ import (
 )
 
 func redirectToError(context *model.Context, req *http.Request) {
-	log.Printf("ReverseProxyDirector query: %v\nUnable to redirect", req.URL.RequestURI())
+	log.Printf("%v\nUnable to redirect", req.URL.RequestURI())
 	req.URL.Scheme = context.LoadBalancerScheme
 	req.URL.Host = req.Host
 	req.URL.Path = "/error/"
@@ -56,6 +56,6 @@ func ReverseProxyDirector(context *model.Context) func(*http.Request) {
 		req.URL.Path = path
 
 		fmt.Println()
-		log.Printf("ReverseProxyDirector query: %v \nredirect to %v\n\n", oldURL, req.URL)
+		log.Printf("%v \nredirect to %v\n\n", oldURL, req.URL)
 	}
 }

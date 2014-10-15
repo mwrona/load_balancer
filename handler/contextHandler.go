@@ -16,11 +16,11 @@ type contextHandler struct {
 func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err, _ := ch.f(ch.context, w, r).(*model.HTTPError)
 	if err != nil {
-		log.Printf("%s: \nQuery: %s\nResponse: %v; %s\n\n", err.Who(), err.Query(), err.Code(), err.Error())
+		log.Printf("%s\nResponse: %v; %s\n\n", r.URL.RequestURI(), err.Code(), err.Error())
 		http.Error(w, err.Error(), err.Code())
 	}
 }
 
-func Context(context *model.Context, f contextHandlerFunction) contextHandler {
+func Context(context *model.Context, f contextHandlerFunction) http.Handler {
 	return contextHandler{context, f}
 }
