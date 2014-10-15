@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"fmt"
@@ -12,11 +12,7 @@ func messageWriter(who, query, message string, w http.ResponseWriter) {
 	fmt.Fprintf(w, message)
 }
 
-func RegistrationHandler(context *model.Context, w http.ResponseWriter, r *http.Request) error {
-	if r.Host != "localhost" && r.Host != context.LoadBalancerAddress {
-		return model.NewHTTPError("RegistrationHandler", r.URL.String(), "Registration from remote client is forbidden", 403)
-	}
-
+func Registration(context *model.Context, w http.ResponseWriter, r *http.Request) error {
 	address := r.FormValue("address")
 	service_name := r.FormValue("name")
 	if address == "" {
@@ -56,7 +52,7 @@ func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w h
 	}
 }
 */
-func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request) error {
+func List(context *model.Context, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
 		return model.NewHTTPError("ListHandler", r.URL.String(), "Missing service name", 422)
@@ -77,6 +73,6 @@ func ListHandler(context *model.Context, w http.ResponseWriter, r *http.Request)
 	return nil
 }
 
-func ErrorHandler(w http.ResponseWriter, r *http.Request) {
+func Error(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Service list is empty or all services are not responding. Please try again later.", 404)
 }

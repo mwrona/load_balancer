@@ -7,7 +7,7 @@ import (
 	"net/http/httputil"
 	"os"
 	"runtime"
-	"scalarm_load_balancer/handlers"
+	"scalarm_load_balancer/handler"
 	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
 )
@@ -61,15 +61,15 @@ func main() {
 	}
 
 	//setting reverse proxy
-	reverseProxy := &httputil.ReverseProxy{Director: handlers.ReverseProxyDirector(context), Transport: TransportCert}
+	reverseProxy := &httputil.ReverseProxy{Director: handler.ReverseProxyDirector(context), Transport: TransportCert}
 	http.Handle("/", reverseProxy)
 
-	http.Handle("/register", model.ContextHandler(context, handlers.RegistrationHandler))
+	http.Handle("/register", handler.Authentication(config.PrivateLoadBalancerAddress, handler.Context(context, handler.Registration)))
 	//http.Handle("/unregister", model.ServicesListHandler(context.RedirectionsList,
 	//	handlers.UnregistrationHandler)))
-	http.Handle("/list", model.ContextHandler(context, handlers.ListHandler))
+	http.Handle("/list", handler.Context(context, handler.List))
 
-	http.HandleFunc("/error/", handlers.ErrorHandler)
+	http.HandleFunc("/error/", handler.Error)
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)

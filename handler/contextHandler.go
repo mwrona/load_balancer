@@ -1,25 +1,26 @@
-package model
+package handler
 
 import (
 	"log"
 	"net/http"
+	"scalarm_load_balancer/model"
 )
 
-type contextHandlerFunction func(*Context, http.ResponseWriter, *http.Request) error
+type contextHandlerFunction func(*model.Context, http.ResponseWriter, *http.Request) error
 
 type contextHandler struct {
-	context *Context
+	context *model.Context
 	f       contextHandlerFunction
 }
 
 func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err, _ := ch.f(ch.context, w, r).(*HTTPError)
+	err, _ := ch.f(ch.context, w, r).(*model.HTTPError)
 	if err != nil {
 		log.Printf("%s: \nQuery: %s\nResponse: %v; %s\n\n", err.Who(), err.Query(), err.Code(), err.Error())
 		http.Error(w, err.Error(), err.Code())
 	}
 }
 
-func ContextHandler(context *Context, f contextHandlerFunction) contextHandler {
+func Context(context *model.Context, f contextHandlerFunction) contextHandler {
 	return contextHandler{context, f}
 }
