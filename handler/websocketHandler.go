@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"scalarm_load_balancer/model"
+	"strings"
 )
 
 func isWebsocket(req *http.Request) bool {
@@ -31,10 +32,19 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 		//connection to target
 		var d net.Conn
 		var err error
+		host := req.URL.Host
+		ok := strings.Contains(host, ":")
+
 		if req.URL.Scheme == "http" {
-			d, err = net.Dial("tcp", req.URL.Host)
+			if !ok {
+				host = host + ":80"
+			}
+			d, err = net.Dial("tcp", host)
 		} else {
-			d, err = tls.Dial("tcp", req.URL.Host, &tls.Config{InsecureSkipVerify: true})
+			if !ok {
+				host = host + ":443"
+			}
+			d, err = tls.Dial("tcp", host, &tls.Config{InsecureSkipVerify: true})
 		}
 
 		if err != nil {
