@@ -7,7 +7,7 @@ if [ -z "$PORT" ]; then
 fi
 
 if [ $PORT = "443" ]; then
-	echo "nohup ./scalarm_load_balancer > log 2> log &" | sudo sh
+	echo "nohup ./scalarm_load_balancer &" | sudo sh
 else
 	nohup ./scalarm_load_balancer > log 2> log &
 fi

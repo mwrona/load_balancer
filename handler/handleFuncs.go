@@ -52,23 +52,35 @@ func UnregistrationHandler(servicesTypesList map[string]*model.ServicesList, w h
 	}
 }
 */
+func printServicesList(sl *model.ServicesList, w http.ResponseWriter) {
+	fmt.Fprintln(w, sl.Name()+":\n")
+	for _, val := range sl.GetServicesList() {
+		fmt.Fprintln(w, "\t", val)
+	}
+}
+
+func printAllServicesList(slt model.SerivesesListMap, w http.ResponseWriter) {
+	for _, sl := range slt {
+		printServicesList(sl, w)
+		fmt.Fprintln(w)
+	}
+}
+
 func List(context *model.Context, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		return model.NewHTTPError("Missing service name", 422)
+		printAllServicesList(context.ServicesTypesList, w)
+		log.Printf("%s\nMessage: all services list\n\n", r.URL.String())
+		return nil
 	}
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		return model.NewHTTPError("Service "+service_name+" does not exist", 422)
+		return model.NewHTTPError("Service "+service_name+" does not exist", 412)
 	}
-
 	log.Printf("%s\nMessage: %s list\n\n", r.URL.String(), sl.Name())
 
-	fmt.Fprintln(w, "Available "+sl.Name()+":\n")
-	for _, val := range sl.GetServicesList() {
-		fmt.Fprintln(w, val)
-	}
+	printServicesList(sl, w)
 
 	return nil
 }
