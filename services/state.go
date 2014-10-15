@@ -14,6 +14,12 @@ type State struct {
 }
 
 func StateDeamon(stateChan chan byte, services map[string]*model.ServicesList) {
+	var s byte
+	for s != 'e' {
+		select {
+		case s = <-stateChan:
+		}
+	}
 	for {
 		select {
 		case <-stateChan:

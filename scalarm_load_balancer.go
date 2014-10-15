@@ -37,7 +37,7 @@ func main() {
 	}
 
 	//creating channel for requests about saving state
-	stateChan := make(chan byte, 15)
+	stateChan := make(chan byte, 100)
 
 	//creating services lists and names maps
 	redirectionsList := make(map[string]*model.ServicesList)
@@ -52,8 +52,12 @@ func main() {
 			go services.ServicesStatusChecker(redirectionsList[rc.Path])
 		}
 	}
+	//StateDeamon - on signal saves state
+	go services.StateDeamon(stateChan, servicesTypesList)
 	//loading state if exists
 	services.LoadState(servicesTypesList)
+	//enabling state saving, no need to save after every loaded address
+	stateChan <- 'e'
 
 	//setting context
 	context := &model.Context{
@@ -90,7 +94,6 @@ func main() {
 
 	//starting services
 	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
-	go services.StateDeamon(stateChan, servicesTypesList)
 
 	//setting up server
 	server := &http.Server{

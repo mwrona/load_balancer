@@ -64,7 +64,8 @@ func (sl *ServicesList) AddService(address string) error {
 	serviceInfo := &serviceInfo{address: address}
 
 	sl.list = append(sl.list, serviceInfo)
-	//sl.stateChan <- 's'
+
+	sl.stateChan <- 's'
 	return nil
 }
 
