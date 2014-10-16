@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"sync"
 )
@@ -25,11 +26,13 @@ type List struct {
 }
 
 type RedirectionPolicy struct {
-	Path                  string
-	Name                  string
-	DisableStatusChecking bool
-	Scheme                string
-	StatusPath            string
+	Path                   string
+	Name                   string
+	DisableStatusChecking  bool
+	Scheme                 string
+	StatusPath             string
+	FailedConnectionsLimit int
+	SecondsBetweenChecking time.Duration
 }
 
 func NewList(rc RedirectionPolicy) *List {
@@ -45,18 +48,24 @@ func NewList(rc RedirectionPolicy) *List {
 	if rc.Name == "" {
 		log.Fatalf("Missing name in RedirectionPolicy")
 	}
+	if rc.FailedConnectionsLimit == 0 {
+		rc.FailedConnectionsLimit = 5
+	}
+	if rc.SecondsBetweenChecking == 0 {
+		rc.SecondsBetweenChecking = 30
+	}
 
 	l := &List{
 		it:                     -1,
 		list:                   make([]*serviceInfo, 0, 0),
 		mutexSL:                &sync.Mutex{},
-		failedConnectionsLimit: 5,
+		failedConnectionsLimit: rc.FailedConnectionsLimit,
 		scheme:                 rc.Scheme,
 		name:                   rc.Name,
 		statusPath:             rc.StatusPath}
 	// starting status checking daemon
 	if !rc.DisableStatusChecking {
-		go statusChecker(l)
+		go statusChecker(l, rc.SecondsBetweenChecking)
 	}
 	return l
 }

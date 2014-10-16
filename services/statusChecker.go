@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func statusChecker(sl *List) {
-	ticker := time.NewTicker(30 * time.Second)
+func statusChecker(sl *List, secondsBetweenChecking time.Duration) {
+	ticker := time.NewTicker(secondsBetweenChecking * time.Second)
 	for {
 		select {
 		case <-ticker.C:
