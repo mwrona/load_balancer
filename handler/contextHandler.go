@@ -6,20 +6,20 @@ import (
 	"scalarm_load_balancer/services"
 )
 
-type hTTPError struct {
+type httpError struct {
 	message string
 	code    int
 }
 
-func newHTTPError(message string, code int) *hTTPError {
-	return &hTTPError{message, code}
+func newHTTPError(message string, code int) *httpError {
+	return &httpError{message, code}
 }
 
-func (e *hTTPError) Error() string {
+func (e *httpError) Error() string {
 	return e.message
 }
 
-func (e *hTTPError) Code() int {
+func (e *httpError) Code() int {
 	return e.code
 }
 
@@ -46,7 +46,7 @@ type contextHandler struct {
 }
 
 func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err, _ := ch.f(ch.context, w, r).(*hTTPError)
+	err, _ := ch.f(ch.context, w, r).(*httpError)
 	if err != nil {
 		log.Printf("%s\nResponse: %v; %s\n\n", r.URL.RequestURI(), err.Code(), err.Error())
 		http.Error(w, err.Error(), err.Code())
