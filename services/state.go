@@ -6,28 +6,13 @@ import (
 	"log"
 )
 
-var stateChan chan byte
-var stateDaemonInit bool
-
-func init() {
-	stateChan = make(chan byte, 100)
-	stateDaemonInit = false
-}
-
 type State struct {
 	Name          string
 	Scheme        string
 	AddressesList []string
 }
 
-func StartStateDaemon(services TypesMap) {
-	if stateDaemonInit == false {
-		go stateDaemon(services)
-		stateDaemonInit = true
-	}
-}
-
-func stateDaemon(services TypesMap) {
+func stateDaemon(services TypesMap, stateChan chan byte) {
 	var s byte
 	for {
 		select {
@@ -38,15 +23,15 @@ func stateDaemon(services TypesMap) {
 					case s = <-stateChan:
 					}
 				}
-				SaveState(services)
+				saveState(services)
 			} else {
-				SaveState(services)
+				saveState(services)
 			}
 		}
 	}
 }
 
-func SaveState(services TypesMap) {
+func saveState(services TypesMap) {
 	statesList := make([]State, 0, 0)
 	for _, s := range services {
 		statesList = append(statesList, State{s.Name(), s.Scheme(), s.AddressesList()})
@@ -64,7 +49,7 @@ func SaveState(services TypesMap) {
 	log.Println("State saved succesfully")
 }
 
-func LoadState(services TypesMap) {
+func loadState(services TypesMap, stateChan chan byte) {
 	stateChan <- 'l'
 	defer func() {
 		stateChan <- 'e'

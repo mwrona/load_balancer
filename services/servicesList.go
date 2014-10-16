@@ -22,6 +22,7 @@ type List struct {
 	scheme                 string
 	name                   string
 	statusPath             string
+	stateChan              chan byte
 }
 
 type RedirectionPolicy struct {
@@ -34,7 +35,26 @@ type RedirectionPolicy struct {
 	SecondsBetweenChecking time.Duration
 }
 
-func NewList(rc RedirectionPolicy) *List {
+func NewMaps(rp []RedirectionPolicy) (redirectionsList TypesMap, servicesTypesList TypesMap) {
+	//creating services lists and names maps
+	redirectionsList = make(TypesMap)
+	servicesTypesList = make(TypesMap)
+	stateChan := make(chan byte, 100)
+	for _, rc := range rp {
+		nsl := newList(&rc, stateChan)
+		redirectionsList[rc.Path] = nsl
+		servicesTypesList[rc.Name] = nsl
+	}
+
+	//do not modify redirectionsList and servicesTypesList after this point - multi thread use
+	//StateDeamon - on signal saves state
+	go stateDaemon(servicesTypesList, stateChan)
+	//loading state if exists
+	go loadState(servicesTypesList, stateChan)
+	return
+}
+
+func newList(rc *RedirectionPolicy, stateChan chan byte) *List {
 	if rc.Scheme == "" {
 		rc.Scheme = "http"
 	}
@@ -98,7 +118,7 @@ func (sl *List) AddService(address string) error {
 
 	sl.list = append(sl.list, serviceInfo)
 
-	stateChan <- 's'
+	sl.stateChan <- 's'
 	return nil
 }
 
@@ -125,7 +145,7 @@ func (sl *List) removeService(i int) {
 		sl.it--
 	}
 
-	stateChan <- 's'
+	sl.stateChan <- 's'
 }
 
 func (sl *List) GetNext() (string, error) {

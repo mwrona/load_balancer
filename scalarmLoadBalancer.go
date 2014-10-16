@@ -34,23 +34,13 @@ func main() {
 	if err != nil {
 		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
 	}
-
-	//creating services lists and names maps
-	redirectionsList := make(services.TypesMap)
-	servicesTypesList := make(services.TypesMap)
-	for _, rc := range config.RedirectionConfig {
-		nsl := services.NewList(rc)
-		redirectionsList[rc.Path] = nsl
-		servicesTypesList[rc.Name] = nsl
-	}
-	//do not modify redirectionsList and servicesTypesList after this point
-	//StateDeamon - on signal saves state
-	go services.StartStateDaemon(servicesTypesList)
-	//loading state if exists
-	go services.LoadState(servicesTypesList)
-
-	//setting context
-	context := handler.AppContext(redirectionsList, servicesTypesList, config.LoadBalancerScheme)
+	//creating redirections and names maps
+	redirectionsList, servicesTypesList := services.NewMaps(config.RedirectionConfig)
+	//setting app context
+	context := handler.AppContext(
+		redirectionsList,
+		servicesTypesList,
+		config.LoadBalancerScheme)
 
 	//disabling certificate checking
 	TLSClientConfigCert := &tls.Config{InsecureSkipVerify: true}
