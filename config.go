@@ -1,9 +1,10 @@
-package model
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"scalarm_load_balancer/services"
 )
 
 type Config struct {
@@ -13,7 +14,7 @@ type Config struct {
 	LoadBalancerScheme         string
 	CertFilePath               string
 	KeyFilePath                string
-	RedirectionConfig          []RedirectionPolicy
+	RedirectionConfig          []services.RedirectionPolicy
 }
 
 func LoadConfig(filename string) (*Config, error) {

@@ -8,7 +8,6 @@ import (
 	"os"
 	"runtime"
 	"scalarm_load_balancer/handler"
-	"scalarm_load_balancer/model"
 	"scalarm_load_balancer/services"
 
 	"github.com/natefinch/lumberjack"
@@ -31,36 +30,26 @@ func main() {
 	} else {
 		configFile = "config.json"
 	}
-	config, err := model.LoadConfig(configFile)
+	config, err := LoadConfig(configFile)
 	if err != nil {
 		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
 	}
 
-	//creating channel for requests about saving state
-	stateChan := make(chan byte, 100)
-
 	//creating services lists and names maps
-	redirectionsList := make(map[string]*model.ServicesList)
-	servicesTypesList := make(map[string]*model.ServicesList)
+	redirectionsList := make(services.TypesMap)
+	servicesTypesList := make(services.TypesMap)
 	for _, rc := range config.RedirectionConfig {
-		nsl := model.NewServicesList(rc, stateChan)
+		nsl := services.NewList(rc)
 		redirectionsList[rc.Path] = nsl
 		servicesTypesList[rc.Name] = nsl
-
-		// starting status checking deamons
-		if !rc.DisableStatusChecking {
-			go services.ServicesStatusChecker(redirectionsList[rc.Path])
-		}
 	}
 	//StateDeamon - on signal saves state
-	go services.StateDeamon(stateChan, servicesTypesList)
+	go services.StartStateDaemon(servicesTypesList)
 	//loading state if exists
 	services.LoadState(servicesTypesList)
-	//enabling state saving, no need to save after every loaded address
-	stateChan <- 'e'
 
 	//setting context
-	context := &model.Context{
+	context := &handler.AppContext{
 		RedirectionsList:   redirectionsList,
 		ServicesTypesList:  servicesTypesList,
 		LoadBalancerScheme: config.LoadBalancerScheme,
@@ -71,7 +60,7 @@ func main() {
 		TLSClientConfig: TLSClientConfigCert,
 	}
 
-	//setting reverse proxy
+	//setting routing
 	director := handler.ReverseProxyDirector(context)
 	reverseProxy := &httputil.ReverseProxy{Director: director, Transport: TransportCert}
 	http.Handle("/", handler.Context(nil, handler.Websocket(director, reverseProxy)))
@@ -93,7 +82,7 @@ func main() {
 	http.HandleFunc("/error", handler.RedirectionError)
 
 	//starting services
-	go services.StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
+	go StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
 
 	//setting up server
 	server := &http.Server{

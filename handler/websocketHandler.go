@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"scalarm_load_balancer/model"
 	"strings"
 )
 
@@ -16,7 +15,7 @@ func isWebsocket(req *http.Request) bool {
 
 func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunction {
 	errorMessage := "Unable to establish websocket connection"
-	return func(context *model.Context, w http.ResponseWriter, req *http.Request) error {
+	return func(context *AppContext, w http.ResponseWriter, req *http.Request) error {
 		if !isWebsocket(req) {
 			h.ServeHTTP(w, req)
 			return nil
@@ -49,7 +48,7 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return model.NewHTTPError(errorMessage, 404)
+			return newHTTPError(errorMessage, 404)
 		}
 		defer d.Close()
 
@@ -57,12 +56,12 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 		hj, ok := w.(http.Hijacker)
 		if !ok {
 			log.Printf("Websocket connection failed: Casting to http.Hijacker failed")
-			return model.NewHTTPError(errorMessage, 500)
+			return newHTTPError(errorMessage, 500)
 		}
 		nc, _, err := hj.Hijack()
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return model.NewHTTPError(errorMessage, 500)
+			return newHTTPError(errorMessage, 500)
 		}
 		defer nc.Close()
 
@@ -70,7 +69,7 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 		err = req.Write(d)
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return model.NewHTTPError(errorMessage, 404)
+			return newHTTPError(errorMessage, 404)
 		}
 
 		errc := make(chan error, 2)

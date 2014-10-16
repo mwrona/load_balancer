@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"scalarm_load_balancer/model"
+	"scalarm_load_balancer/services"
 )
 
 func messageWriter(query, message string, w http.ResponseWriter) {
@@ -12,27 +12,38 @@ func messageWriter(query, message string, w http.ResponseWriter) {
 	fmt.Fprintf(w, message)
 }
 
-func ServicesManagment(f func(string, *model.ServicesList, http.ResponseWriter, *http.Request)) contextHandlerFunction {
-	return func(context *model.Context, w http.ResponseWriter, r *http.Request) error {
+func Authentication(allowedAddress string, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Host != "localhost" && r.Host != allowedAddress {
+			http.Error(w, "Registration from remote client is forbidden", 403)
+			return
+		}
+
+		h.ServeHTTP(w, r)
+	})
+}
+
+func ServicesManagment(f func(string, *services.List, http.ResponseWriter, *http.Request)) contextHandlerFunction {
+	return func(context *AppContext, w http.ResponseWriter, r *http.Request) error {
 		address := r.FormValue("address")
 		service_name := r.FormValue("name")
 		if address == "" {
-			return model.NewHTTPError("Missing address", 412)
+			return newHTTPError("Missing address", 412)
 		}
 		if service_name == "" {
-			return model.NewHTTPError("Missing service name", 412)
+			return newHTTPError("Missing service name", 412)
 		}
 
 		sl, ok := context.ServicesTypesList[service_name]
 		if ok == false {
-			return model.NewHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
+			return newHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 		}
 		f(address, sl, w, r)
 		return nil
 	}
 }
 
-func Registration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+func Registration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
 	if err := sl.AddService(address); err == nil {
 		messageWriter(r.URL.String(), fmt.Sprintf("Registered new %s: %s", sl.Name(), address), w)
 	} else {
@@ -40,26 +51,26 @@ func Registration(address string, sl *model.ServicesList, w http.ResponseWriter,
 	}
 }
 
-func Unregistration(address string, sl *model.ServicesList, w http.ResponseWriter, r *http.Request) {
+func Unregistration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
 	sl.UnregisterService(address)
 	messageWriter(r.URL.String(), fmt.Sprintf("Unregistered %s: %s", sl.Name(), address), w)
 }
 
-func printServicesList(sl *model.ServicesList, w http.ResponseWriter) {
+func printServicesList(sl *services.List, w http.ResponseWriter) {
 	fmt.Fprintf(w, "%s:\n", sl.Name())
-	for _, val := range sl.GetServicesList() {
+	for _, val := range sl.AddressesList() {
 		fmt.Fprintf(w, "\t%v\n", val)
 	}
 }
 
-func printAllServicesList(slt model.SerivesesListMap, w http.ResponseWriter) {
+func printAllServicesList(slt services.TypesMap, w http.ResponseWriter) {
 	for _, sl := range slt {
 		printServicesList(sl, w)
 		fmt.Fprintln(w)
 	}
 }
 
-func List(context *model.Context, w http.ResponseWriter, r *http.Request) error {
+func List(context *AppContext, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
 		printAllServicesList(context.ServicesTypesList, w)
@@ -69,7 +80,7 @@ func List(context *model.Context, w http.ResponseWriter, r *http.Request) error 
 
 	sl, ok := context.ServicesTypesList[service_name]
 	if ok == false {
-		return model.NewHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
+		return newHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 	}
 	log.Printf("%s\nMessage: %s list\n\n", r.URL.String(), sl.Name())
 

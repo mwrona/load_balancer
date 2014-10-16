@@ -4,8 +4,15 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"scalarm_load_balancer/model"
 )
+
+var stateChan chan byte
+var stateDaemonInit bool
+
+func init() {
+	stateChan = make(chan byte, 100)
+	stateDaemonInit = false
+}
 
 type State struct {
 	Name          string
@@ -13,25 +20,35 @@ type State struct {
 	AddressesList []string
 }
 
-func StateDeamon(stateChan chan byte, services map[string]*model.ServicesList) {
-	var s byte
-	for s != 'e' {
-		select {
-		case s = <-stateChan:
-		}
+func StartStateDaemon(services TypesMap) {
+	if stateDaemonInit == false {
+		go stateDaemon(services)
+		stateDaemonInit = true
 	}
+}
+
+func stateDaemon(services TypesMap) {
+	var s byte
 	for {
 		select {
-		case <-stateChan:
-			saveState(services)
+		case s = <-stateChan:
+			if s == 'l' {
+				for s != 'e' {
+					select {
+					case s = <-stateChan:
+					}
+				}
+			} else {
+				SaveState(services)
+			}
 		}
 	}
 }
 
-func saveState(services map[string]*model.ServicesList) {
+func SaveState(services TypesMap) {
 	statesList := make([]State, 0, 0)
 	for _, s := range services {
-		statesList = append(statesList, State{s.Name(), s.Scheme(), s.GetServicesList()})
+		statesList = append(statesList, State{s.Name(), s.Scheme(), s.AddressesList()})
 	}
 	data, err := json.Marshal(statesList)
 	if err != nil {
@@ -46,7 +63,11 @@ func saveState(services map[string]*model.ServicesList) {
 	log.Println("State saved succesfully")
 }
 
-func LoadState(services map[string]*model.ServicesList) {
+func LoadState(services TypesMap) {
+	stateChan <- 'l'
+	defer func() {
+		stateChan <- 'e'
+	}()
 	data, err := ioutil.ReadFile("state.json")
 	if err != nil {
 		log.Printf("An error occurred while loading state: %s", err.Error())

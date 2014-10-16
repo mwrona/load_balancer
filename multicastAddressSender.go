@@ -1,9 +1,9 @@
-package services
+package main
 
 import (
 	"log"
 	"net"
-	"scalarm_load_balancer/utils"
+	"strconv"
 	"time"
 
 	"code.google.com/p/go.net/ipv4"
@@ -13,7 +13,7 @@ func StartMulticastAddressSender(loadBalancerAddress, multicastAddress string) {
 	c := make(chan error)
 
 	for {
-		if _, err := utils.RepetitiveCaller(
+		if _, err := repetitiveCaller(
 			func() (interface{}, error) {
 				go multicastAddressSender(loadBalancerAddress, multicastAddress, c)
 				err := <-c
@@ -83,4 +83,22 @@ func multicastAddressSender(loadBalancerAddress, multicastAddress string, out ch
 			}
 		}
 	}
+}
+
+func repetitiveCaller(f func() (interface{}, error), intervals []int, functionName string) (out interface{}, err error) {
+	if intervals == nil {
+		intervals = []int{15, 30, 60, 120, 240}
+	}
+
+	intervals = append(intervals, -1)
+
+	for _, duration := range intervals {
+		out, err = f()
+		if err == nil || duration == -1 {
+			return
+		}
+		log.Printf("RepetitiveCaller : call " + functionName + " failed, err: \n" + err.Error() + "\nReattempt in " + strconv.Itoa(duration) + "s")
+		time.Sleep(time.Second * time.Duration(duration))
+	}
+	return
 }

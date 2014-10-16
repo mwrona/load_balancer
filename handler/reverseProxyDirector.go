@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"scalarm_load_balancer/model"
+	"scalarm_load_balancer/services"
 	"strings"
 )
 
-func redirectToError(context *model.Context, req *http.Request, err error) {
+func redirectToError(context *AppContext, req *http.Request, err error) {
 	log.Printf("%v\nUnable to redirect: %v", req.URL.RequestURI(), err.Error())
 
 	values := url.Values{}
@@ -21,7 +21,7 @@ func redirectToError(context *model.Context, req *http.Request, err error) {
 	req.URL.Path = "/error"
 }
 
-func parseURL(context *model.Context, req *http.Request) (string, *model.ServicesList) {
+func parseURL(context *AppContext, req *http.Request) (string, *services.List) {
 	splitted := strings.SplitN(req.URL.Path, "/", 3)
 	if len(splitted) < 3 {
 		splitted = append(splitted, "")
@@ -39,7 +39,7 @@ func parseURL(context *model.Context, req *http.Request) (string, *model.Service
 	return path, sl
 }
 
-func ReverseProxyDirector(context *model.Context) func(*http.Request) {
+func ReverseProxyDirector(context *AppContext) func(*http.Request) {
 	return func(req *http.Request) {
 		oldURL := req.URL.RequestURI()
 
