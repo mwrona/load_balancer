@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net"
-	"strconv"
 	"time"
 
 	"code.google.com/p/go.net/ipv4"
@@ -97,7 +96,7 @@ func repetitiveCaller(f func() (interface{}, error), intervals []int, functionNa
 		if err == nil || duration == -1 {
 			return
 		}
-		log.Printf("RepetitiveCaller : call " + functionName + " failed, err: \n" + err.Error() + "\nReattempt in " + strconv.Itoa(duration) + "s")
+		log.Printf("RepetitiveCaller : call %s failed\nerr: %s\nReattempt in %vs", functionName, err.Error(), duration)
 		time.Sleep(time.Second * time.Duration(duration))
 	}
 	return
