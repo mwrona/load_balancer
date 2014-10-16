@@ -69,7 +69,7 @@ func main() {
 
 	http.HandleFunc("/error", handler.RedirectionError)
 
-	//starting periodical multicast
+	//starting periodical multicast addres sending
 	go StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
 
 	//setting up server
