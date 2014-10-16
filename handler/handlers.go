@@ -24,7 +24,7 @@ func Authentication(allowedAddress string, h http.Handler) http.Handler {
 }
 
 func ServicesManagment(f func(string, *services.List, http.ResponseWriter, *http.Request)) contextHandlerFunction {
-	return func(context *AppContext, w http.ResponseWriter, r *http.Request) error {
+	return func(context *appContext, w http.ResponseWriter, r *http.Request) error {
 		address := r.FormValue("address")
 		service_name := r.FormValue("name")
 		if address == "" {
@@ -34,7 +34,7 @@ func ServicesManagment(f func(string, *services.List, http.ResponseWriter, *http
 			return newHTTPError("Missing service name", 412)
 		}
 
-		sl, ok := context.ServicesTypesList[service_name]
+		sl, ok := context.servicesTypesList[service_name]
 		if ok == false {
 			return newHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 		}
@@ -70,15 +70,15 @@ func printAllServicesList(slt services.TypesMap, w http.ResponseWriter) {
 	}
 }
 
-func List(context *AppContext, w http.ResponseWriter, r *http.Request) error {
+func List(context *appContext, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		printAllServicesList(context.ServicesTypesList, w)
+		printAllServicesList(context.servicesTypesList, w)
 		log.Printf("%s\nMessage: all services list\n\n", r.URL.String())
 		return nil
 	}
 
-	sl, ok := context.ServicesTypesList[service_name]
+	sl, ok := context.servicesTypesList[service_name]
 	if ok == false {
 		return newHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 	}

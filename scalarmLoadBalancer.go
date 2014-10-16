@@ -43,17 +43,15 @@ func main() {
 		redirectionsList[rc.Path] = nsl
 		servicesTypesList[rc.Name] = nsl
 	}
+	//do not modify redirectionsList and servicesTypesList after this point
 	//StateDeamon - on signal saves state
 	go services.StartStateDaemon(servicesTypesList)
 	//loading state if exists
-	services.LoadState(servicesTypesList)
+	go services.LoadState(servicesTypesList)
 
 	//setting context
-	context := &handler.AppContext{
-		RedirectionsList:   redirectionsList,
-		ServicesTypesList:  servicesTypesList,
-		LoadBalancerScheme: config.LoadBalancerScheme,
-	}
+	context := handler.AppContext(redirectionsList, servicesTypesList, config.LoadBalancerScheme)
+
 	//disabling certificate checking
 	TLSClientConfigCert := &tls.Config{InsecureSkipVerify: true}
 	TransportCert := &http.Transport{
@@ -81,7 +79,7 @@ func main() {
 
 	http.HandleFunc("/error", handler.RedirectionError)
 
-	//starting services
+	//starting periodical multicast
 	go StartMulticastAddressSender(config.PrivateLoadBalancerAddress, config.MulticastAddress)
 
 	//setting up server

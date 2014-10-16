@@ -3,9 +3,8 @@ package services
 import (
 	"fmt"
 	"log"
-	"time"
-
 	"sync"
+	"time"
 )
 
 type TypesMap map[string]*List

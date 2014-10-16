@@ -15,7 +15,7 @@ func isWebsocket(req *http.Request) bool {
 
 func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunction {
 	errorMessage := "Unable to establish websocket connection"
-	return func(context *AppContext, w http.ResponseWriter, req *http.Request) error {
+	return func(context *appContext, w http.ResponseWriter, req *http.Request) error {
 		if !isWebsocket(req) {
 			h.ServeHTTP(w, req)
 			return nil

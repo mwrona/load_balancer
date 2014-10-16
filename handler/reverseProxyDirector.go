@@ -9,41 +9,41 @@ import (
 	"strings"
 )
 
-func redirectToError(context *AppContext, req *http.Request, err error) {
+func redirectToError(context *appContext, req *http.Request, err error) {
 	log.Printf("%v\nUnable to redirect: %v", req.URL.RequestURI(), err.Error())
 
 	values := url.Values{}
 	values.Add("message", err.Error())
 
 	req.URL.RawQuery = values.Encode()
-	req.URL.Scheme = context.LoadBalancerScheme
+	req.URL.Scheme = context.loadBalancerScheme
 	req.URL.Host = req.Host
 	req.URL.Path = "/error"
 }
 
-func parseURL(context *AppContext, req *http.Request) (string, *services.List) {
+func parseURL(context *appContext, req *http.Request) (string, *services.List) {
 	splitted := strings.SplitN(req.URL.Path, "/", 3)
 	if len(splitted) < 3 {
 		splitted = append(splitted, "")
 	}
 
 	prefix := "/" + splitted[1]
-	sl := context.RedirectionsList[prefix]
+	sl := context.redirectionsList[prefix]
 	path := "/" + splitted[2]
 
 	if sl == nil {
-		sl = context.RedirectionsList["/"]
+		sl = context.redirectionsList["/"]
 		path = req.URL.Path
 	}
 
 	return path, sl
 }
 
-func ReverseProxyDirector(context *AppContext) func(*http.Request) {
+func ReverseProxyDirector(context *appContext) func(*http.Request) {
 	return func(req *http.Request) {
 		oldURL := req.URL.RequestURI()
 
-		req.Header.Add("X-Forwarded-Proto", context.LoadBalancerScheme)
+		req.Header.Add("X-Forwarded-Proto", context.loadBalancerScheme)
 
 		path, servicesList := parseURL(context, req)
 		if servicesList == nil {

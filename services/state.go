@@ -38,6 +38,7 @@ func stateDaemon(services TypesMap) {
 					case s = <-stateChan:
 					}
 				}
+				SaveState(services)
 			} else {
 				SaveState(services)
 			}

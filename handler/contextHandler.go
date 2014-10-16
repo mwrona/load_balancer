@@ -23,16 +23,25 @@ func (e *hTTPError) Code() int {
 	return e.code
 }
 
-type AppContext struct {
-	RedirectionsList   services.TypesMap
-	ServicesTypesList  services.TypesMap
-	LoadBalancerScheme string
+//multi thread use - do not modify entries
+type appContext struct {
+	redirectionsList   services.TypesMap
+	servicesTypesList  services.TypesMap
+	loadBalancerScheme string
 }
 
-type contextHandlerFunction func(*AppContext, http.ResponseWriter, *http.Request) error
+func AppContext(redirectionsList, servicesTypesList services.TypesMap, loadBalancerScheme string) *appContext {
+	return &appContext{
+		redirectionsList:   redirectionsList,
+		servicesTypesList:  servicesTypesList,
+		loadBalancerScheme: loadBalancerScheme,
+	}
+}
+
+type contextHandlerFunction func(*appContext, http.ResponseWriter, *http.Request) error
 
 type contextHandler struct {
-	context *AppContext
+	context *appContext
 	f       contextHandlerFunction
 }
 
@@ -44,6 +53,6 @@ func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Context(context *AppContext, f contextHandlerFunction) http.Handler {
+func Context(context *appContext, f contextHandlerFunction) http.Handler {
 	return contextHandler{context, f}
 }
