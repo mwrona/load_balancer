@@ -35,8 +35,6 @@ func multicastAddressSender(loadBalancerAddress, multicastAddress string, out ch
 		out <- err
 		return
 	}
-	// conn, err := net.ListenMulticastUDP("udp", nil, mcaddr)
-	// utils.Check(err)
 
 	c, err := net.ListenPacket("udp4", "")
 	if err != nil {
@@ -74,7 +72,6 @@ func multicastAddressSender(loadBalancerAddress, multicastAddress string, out ch
 	for {
 		select {
 		case <-ticker.C:
-			// _, err = conn.WriteToUDP(b, mcaddr)
 			_, err = conn.WriteTo(b, nil, mcaddr)
 			if err != nil {
 				out <- err
