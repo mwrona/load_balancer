@@ -69,7 +69,7 @@ Description:
  * Scheme - optional, by default: "http"; service scheme
  * StatusPath - optional, by default "/status"; path to status check
  * SecondsBetweenChecking - optional, by default 30; time beetwen periodical status checking; must be greater than zero
- * FailedConnectionsLimit - optional, by default 6; number of failed status checking before removing service
+ * FailedConnectionsLimit - optional, by default 6; number of failed status checking before removing service; must be greater than zero
 
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
