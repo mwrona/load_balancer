@@ -3,7 +3,7 @@ Load Balancer
 Contents 
 ---------- 
 * config - example configuraton for load balancer 
-* scripts - scripts to start on stop load balancer (on linux)
+* scripts - scripts to start and stop load balancer (on linux), script to register load balancer in scalarm infromation service. These scripts should be copy to bin folder. 
 
 Installation guide: 
 ---------------------- 
@@ -85,18 +85,14 @@ To run load balancer you have to supply all necessary files (config.json and in 
 ```
 scalarm_load_balancer config_folder/my_config.json
 ```
-To run properly with Scalarm you need to run below written script (scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once.
+To run properly with Scalarm you need to run below written script (scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once. Copy it to bin folder and supply configuration file.
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries.
 
 ```
 #!/bin/bash
-#config
-INFORMATION_SERVICE_URL_="localhost:11300"
-INFORMATION_SERVICE_LOGIN_="scalarm"
-INFORMATION_SERVICE_PASSWORD_="scalarm"
-REMOTE_LOAD_BALANCER_ADDRESS="149.156.10.32:13585"
-LOCAL_LOAD_BALANCER_ADDRESS="localhost"
+#load config
+source scalarm_registration_config
 #script
 if [ -z "$INFORMATION_SERVICE_URL" ]; then
     INFORMATION_SERVICE_URL=$INFORMATION_SERVICE_URL_
@@ -114,6 +110,14 @@ echo
 curl -k --data "address=$INFORMATION_SERVICE_URL&name=InformationService" https://$LOCAL_LOAD_BALANCER_ADDRESS/register
 echo
 
+```
+Example of scalarm_registration_config:
+```
+INFORMATION_SERVICE_URL_="localhost:11300"
+INFORMATION_SERVICE_LOGIN_="scalarm"
+INFORMATION_SERVICE_PASSWORD_="scalarm"
+REMOTE_LOAD_BALANCER_ADDRESS="149.156.10.32:13585"
+LOCAL_LOAD_BALANCER_ADDRESS="localhost"
 ```
 
 
