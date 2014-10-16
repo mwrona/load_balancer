@@ -2,7 +2,6 @@ Load Balancer
 ============ 
 Contents 
 ---------- 
-* scalarm_load_balancer - main load balancer program  
 * config - example configuraton for load balancer 
 * scripts - scripts to start on stop load balancer (on linux)
 
