@@ -118,7 +118,7 @@ func (sl *List) AddService(address string) error {
 
 	sl.list = append(sl.list, serviceInfo)
 
-	sl.stateChan <- 's'
+	//sl.stateChan <- 's'
 	return nil
 }
 
@@ -145,7 +145,7 @@ func (sl *List) removeService(i int) {
 		sl.it--
 	}
 
-	sl.stateChan <- 's'
+	//sl.stateChan <- 's'
 }
 
 func (sl *List) GetNext() (string, error) {
