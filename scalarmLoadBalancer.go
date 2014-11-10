@@ -9,17 +9,19 @@ import (
 	"runtime"
 	"scalarm_load_balancer/handler"
 	"scalarm_load_balancer/services"
+
+	"github.com/natefinch/lumberjack"
 )
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// log.SetOutput(&lumberjack.Logger{
-	// 	Dir:        "log",
-	// 	MaxSize:    100 * lumberjack.Megabyte,
-	// 	MaxBackups: 3,
-	// 	MaxAge:     28, //days
-	// })
+	log.SetOutput(&lumberjack.Logger{
+		Dir:        "log",
+		MaxSize:    100 * lumberjack.Megabyte,
+		MaxBackups: 3,
+		MaxAge:     28, //days
+	})
 
 	//loading config
 	var configFile string

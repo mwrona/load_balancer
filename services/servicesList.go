@@ -81,7 +81,8 @@ func newList(rc *RedirectionPolicy, stateChan chan byte) *List {
 		failedConnectionsLimit: rc.FailedConnectionsLimit,
 		scheme:                 rc.Scheme,
 		name:                   rc.Name,
-		statusPath:             rc.StatusPath}
+		statusPath:             rc.StatusPath,
+		stateChan:              stateChan}
 	// starting status checking daemon
 	if !rc.DisableStatusChecking {
 		go statusChecker(l, rc.SecondsBetweenChecking)
@@ -118,7 +119,7 @@ func (sl *List) AddService(address string) error {
 
 	sl.list = append(sl.list, serviceInfo)
 
-	//sl.stateChan <- 's'
+	sl.stateChan <- 's'
 	return nil
 }
 
@@ -145,7 +146,7 @@ func (sl *List) removeService(i int) {
 		sl.it--
 	}
 
-	//sl.stateChan <- 's'
+	sl.stateChan <- 's'
 }
 
 func (sl *List) GetNext() (string, error) {
