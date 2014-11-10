@@ -126,3 +126,4 @@ API
 * /list - with parameter 'name' or without (it will print all services)
 * /register - POST with parameter 'address' and 'name'
 * /unregister - POST with parameter 'address' and 'name'
+* /<Path> - redirection to service
