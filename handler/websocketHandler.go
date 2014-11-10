@@ -10,7 +10,7 @@ import (
 )
 
 func isWebsocket(req *http.Request) bool {
-	return strings.Contains(req.Header.Get("Connection"), "Upgrade") && req.Header.Get("Upgrade") == "websocket"
+	return strings.Contains(req.Header.Get("Connection"), "Upgrade") && strings.Contains(req.Header.Get("Upgrade"), "websocket")
 }
 
 func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunction {
