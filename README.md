@@ -62,6 +62,8 @@ Description:
 * MulticastAddress - address used to distribute load balancer private address
 * PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast, registration to load balancer is possible only from this address and from localhost
 * CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files, by default CertFilePath: "cert.pem"; KeyFilePath: "key.pem"
+* LogDirectory - optional, by default "log"; directory where logs are stored. 
+* StateDirectory - optional, by default ""; directory where current state of load balancer is saved.
 * RedirectionConfig - config of redirection policy: 
  * Path - path to service
  * Name - name of service type
@@ -82,7 +84,7 @@ For now certificates checking is disable.
 Run 
 ----
 
-To run load balancer you should use provided in bin file scripts. For this is required that load balancer is installed in $GOPATH/bin (by go install command) and config is provided in config/config.json file. In https mode you must also provide certificate files.
+To run load balancer you should use provided in bin file scripts. For this is required that load balancer is installed in $GOPATH/bin (by go install command) and config is provided in config/config.json file. In https mode you must also provide certificate files. It is suggested to choose LogDirectory and StateDirectory same as in example_config.json.
 
 
 You can also run it mannually. For that you have to supply all necessary files (config.json and in the https mode cert.pem and key.pem). By default load balancer is looking for config.json in current directory but you can specify different location as program argument. Example:

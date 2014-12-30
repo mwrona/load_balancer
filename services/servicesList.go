@@ -35,7 +35,7 @@ type RedirectionPolicy struct {
 	SecondsBetweenChecking time.Duration
 }
 
-func NewMaps(rp []RedirectionPolicy) (redirectionsList TypesMap, servicesTypesList TypesMap) {
+func Init(rp []RedirectionPolicy, stateDirectory string) (redirectionsList TypesMap, servicesTypesList TypesMap) {
 	//creating services lists and names maps
 	redirectionsList = make(TypesMap)
 	servicesTypesList = make(TypesMap)
@@ -48,9 +48,9 @@ func NewMaps(rp []RedirectionPolicy) (redirectionsList TypesMap, servicesTypesLi
 
 	//do not modify redirectionsList and servicesTypesList after this point - multi thread use
 	//StateDeamon - on signal saves state
-	go stateDaemon(servicesTypesList, stateChan)
+	go stateDaemon(servicesTypesList, stateChan, stateDirectory)
 	//loading state if exists
-	go loadState(servicesTypesList, stateChan)
+	go loadState(servicesTypesList, stateChan, stateDirectory)
 	return
 }
 

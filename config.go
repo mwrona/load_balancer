@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"scalarm_load_balancer/services"
+	"strings"
 )
 
 type Config struct {
@@ -14,6 +15,8 @@ type Config struct {
 	LoadBalancerScheme         string
 	CertFilePath               string
 	KeyFilePath                string
+	LogDirectory               string
+	StateDirectory             string
 	RedirectionConfig          []services.RedirectionPolicy
 }
 
@@ -55,6 +58,12 @@ func LoadConfig(filename string) (*Config, error) {
 	}
 	if config.RedirectionConfig == nil {
 		return nil, fmt.Errorf("RedirectionConfig is missing")
+	}
+	if config.LogDirectory == "" {
+		config.LogDirectory = "log"
+	}
+	if !strings.HasSuffix(config.StateDirectory, "/") {
+		config.StateDirectory += "/"
 	}
 
 	return config, nil

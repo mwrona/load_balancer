@@ -12,7 +12,7 @@ type State struct {
 	AddressesList []string
 }
 
-func stateDaemon(services TypesMap, stateChan chan byte) {
+func stateDaemon(services TypesMap, stateChan chan byte, stateDirectory string) {
 	var s byte
 	for {
 		select {
@@ -23,15 +23,15 @@ func stateDaemon(services TypesMap, stateChan chan byte) {
 					case s = <-stateChan:
 					}
 				}
-				saveState(services)
+				saveState(services, stateDirectory)
 			} else {
-				saveState(services)
+				saveState(services, stateDirectory)
 			}
 		}
 	}
 }
 
-func saveState(services TypesMap) {
+func saveState(services TypesMap, stateDirectory string) {
 	statesList := make([]State, 0, 0)
 	for _, s := range services {
 		statesList = append(statesList, State{s.Name(), s.Scheme(), s.AddressesList()})
@@ -41,7 +41,7 @@ func saveState(services TypesMap) {
 		log.Printf("An error occurred while saving state: %s", err.Error())
 		return
 	}
-	err = ioutil.WriteFile("state.json", data, 0644)
+	err = ioutil.WriteFile(stateDirectory+"state.json", data, 0644)
 	if err != nil {
 		log.Printf("An error occurred while saving state: %s", err.Error())
 		return
@@ -49,12 +49,12 @@ func saveState(services TypesMap) {
 	log.Println("State saved succesfully")
 }
 
-func loadState(services TypesMap, stateChan chan byte) {
+func loadState(services TypesMap, stateChan chan byte, stateDirectory string) {
 	stateChan <- 'l'
 	defer func() {
 		stateChan <- 'e'
 	}()
-	data, err := ioutil.ReadFile("state.json")
+	data, err := ioutil.ReadFile(stateDirectory + "state.json")
 	if err != nil {
 		log.Printf("An error occurred while loading state: %s", err.Error())
 		return

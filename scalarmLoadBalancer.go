@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -16,13 +17,6 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	log.SetOutput(&lumberjack.Logger{
-		Dir:        "log",
-		MaxSize:    100 * lumberjack.Megabyte,
-		MaxBackups: 3,
-		MaxAge:     28, //days
-	})
-
 	//loading config
 	var configFile string
 	if len(os.Args) == 2 {
@@ -34,8 +28,18 @@ func main() {
 	if err != nil {
 		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
 	}
+
+	//specified logging configuration
+	fmt.Println(config.LogDirectory)
+	log.SetOutput(&lumberjack.Logger{
+		Dir:        config.LogDirectory,
+		MaxSize:    100 * lumberjack.Megabyte,
+		MaxBackups: 3,
+		MaxAge:     28, //days
+	})
+
 	//creating redirections and names maps
-	redirectionsList, servicesTypesList := services.NewMaps(config.RedirectionConfig)
+	redirectionsList, servicesTypesList := services.Init(config.RedirectionConfig, config.StateDirectory)
 	//setting app context
 	context := handler.AppContext(
 		redirectionsList,
