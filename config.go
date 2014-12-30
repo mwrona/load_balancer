@@ -62,7 +62,7 @@ func LoadConfig(filename string) (*Config, error) {
 	if config.LogDirectory == "" {
 		config.LogDirectory = "log"
 	}
-	if !strings.HasSuffix(config.StateDirectory, "/") {
+	if !strings.HasSuffix(config.StateDirectory, "/") && config.StateDirectory != "" {
 		config.StateDirectory += "/"
 	}
 
