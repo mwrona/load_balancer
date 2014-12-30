@@ -81,11 +81,17 @@ For now certificates checking is disable.
 
 Run 
 ----
-To run load balancer you have to supply all necessary files (config.json and in the https mode cert.pem and key.pem). By default load balancer is looking for config.json in current directory but you can specify different location as program argument. Example:
+
+To run load balancer you should use provided in bin file scripts. For this is required that load balancer is installed in $GOPATH/bin (by go install command) and config is provided in config/config.json file. In https mode you must also provide certificate files.
+
+
+You can also run it mannually. For that you have to supply all necessary files (config.json and in the https mode cert.pem and key.pem). By default load balancer is looking for config.json in current directory but you can specify different location as program argument. Example:
 ```
 scalarm_load_balancer config_folder/my_config.json
 ```
-To run properly with Scalarm you need to run below written script (scrpits/scalarm_registration.sh) with appropriate config after first run. You have to run it only once. Copy it to bin folder and supply configuration file.
+Scalarm 
+----
+To run load balancer properly with Scalarm you need to run below written script (also in scalarm_registration/scalarm_registration.sh) with appropriate config. This script register load balancer in Information Service. It must be done only once.
 
 If environment variables INFORMATION_SERVICE_URL, INFORMATION_SERVICE_LOGIN or INFORMATION_SERVICE_PASSWORD are specified they will replace config entries.
 
