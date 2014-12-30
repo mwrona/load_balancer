@@ -57,10 +57,10 @@ Example of config.json:
 
 
 Description:
-* Port - optional, by default 443; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
+* LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
+* Port - optional, by default 443 (https) or 80 (http), depends on the LoadBalancerScheme; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 * MulticastAddress - address used to distribute load balancer private address
 * PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast, registration to load balancer is possible only from this address and from localhost
-* LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
 * CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files, by default CertFilePath: "cert.pem"; KeyFilePath: "key.pem"
 * RedirectionConfig - config of redirection policy: 
  * Path - path to service
