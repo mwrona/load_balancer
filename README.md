@@ -42,10 +42,12 @@ Example of config.json:
 	"MulticastAddress": "224.1.2.3:8000", 
 	"CertFilePath": "cert.pem",
 	"KeyFilePath": "key.pem",
+	"LogDirectory" : "../log",
+	"StateDirectory" : "../state",
 	"RedirectionConfig" : [
-		{"Path": "/", 			 "Name": "ExperimentManager", "StatusPath": "/status"},
+		{"Path": "/", 			 "Name": "ExperimentManager"},
 		{"Path": "/storage", 	 "Name": "StorageManager"},
-		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true, "Scheme": "http"}
+		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true}
 	]
 }
 
