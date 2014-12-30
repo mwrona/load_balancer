@@ -1,9 +1,5 @@
 Load Balancer 
 ============ 
-Contents 
----------- 
-* config - example configuraton for load balancer 
-* scripts - scripts to start and stop load balancer (on linux), script to register load balancer in scalarm infromation service. These scripts should be copy to bin folder. 
 
 Installation guide: 
 ---------------------- 
