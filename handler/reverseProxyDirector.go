@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"scalarm_load_balancer/services"
 	"strings"
+
+	"github.com/mwrona/scalarm_load_balancer/services"
 )
 
 func redirectToError(context *appContext, req *http.Request, err error) {

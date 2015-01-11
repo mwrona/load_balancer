@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"scalarm_load_balancer/services"
 	"strings"
+
+	"github.com/mwrona/scalarm_load_balancer/services"
 )
 
 type Config struct {

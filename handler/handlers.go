@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"scalarm_load_balancer/services"
+
+	"github.com/mwrona/scalarm_load_balancer/services"
 )
 
 func messageWriter(query, message string, w http.ResponseWriter) {

@@ -8,9 +8,9 @@ import (
 	"net/http/httputil"
 	"os"
 	"runtime"
-	"scalarm_load_balancer/handler"
-	"scalarm_load_balancer/services"
 
+	"github.com/mwrona/scalarm_load_balancer/handler"
+	"github.com/mwrona/scalarm_load_balancer/services"
 	"github.com/natefinch/lumberjack"
 )
 

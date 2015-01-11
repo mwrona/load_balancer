@@ -3,7 +3,8 @@ package handler
 import (
 	"log"
 	"net/http"
-	"scalarm_load_balancer/services"
+
+	"github.com/mwrona/scalarm_load_balancer/services"
 )
 
 type httpError struct {
