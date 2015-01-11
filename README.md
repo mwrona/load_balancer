@@ -20,17 +20,13 @@ https://golang.org/doc/code.html#GOPATH
 
 Installation 
 -------------- 
-You can download it directly from GitHub. You have to download it into your $GOPATH/src folder 
+Run this command to download load balancer: 
 ``` 
-git clone https://github.com/mwrona/scalarm_load_balancer.git 
+go get github.com/mwrona/scalarm_load_balancer 
 ``` 
-Now run this command to download all dependencies: 
-``` 
-go get scalarm_load_balancer 
-``` 
-Now you can install load balancer: 
+Now you can install it: 
 ```` 
-go install scalarm_load_balancer
+go install github.com/mwrona/scalarm_load_balancer
 ```` 
 This command will install load balancer in $GOPATH/bin. It's name will be scalarm_load_balancer 
 Config 
