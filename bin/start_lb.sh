@@ -12,5 +12,5 @@ fi
 if [ $PORT = "443" ]; then
 	echo "nohup $GOPATH/bin/scalarm_load_balancer ../config/config.json >/dev/null 2>&1 &" | sudo sh
 else
-	nohup ./scalarm_load_balancer
+	nohup $GOPATH/bin/scalarm_load_balancer ../config/config.json >/dev/null 2>&1 &
 fi
