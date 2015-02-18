@@ -1,5 +1,8 @@
 Load Balancer 
 ============ 
+Latest version available here: https://github.com/Scalarm/scalarm_load_balancer
+
+============
 
 Installation guide: 
 ---------------------- 
